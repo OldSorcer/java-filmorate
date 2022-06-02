@@ -28,6 +28,7 @@ public class FilmController {
         }
         film.setId(idCounter++);
         filmList.put(film.getId(), film);
+        log.info("Успешно добален фильм с ID" + film.getId());
         return film;
     }
 
@@ -41,6 +42,7 @@ public class FilmController {
             throw new ValidationException("Ошибка валидации данных. Проверьте введенные значения и повторите попытку");
         }
         filmList.put(film.getId(), film);
+        log.info("Успешно обновлен фильм с ID" + film.getId());
         return film;
     }
 

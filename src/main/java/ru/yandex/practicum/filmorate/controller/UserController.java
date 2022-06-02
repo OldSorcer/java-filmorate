@@ -31,6 +31,7 @@ public class UserController {
         }
         user.setId(idCounter++);
         userList.put(user.getId(), user);
+        log.info("Успешно создан пользователь с id" + user.getId());
         return user;
     }
 
@@ -44,6 +45,7 @@ public class UserController {
             throw new ValidationException("Ошибка валидации данных. Проверьте введенные значения и повторите попытку");
         }
         userList.put(user.getId(), user);
+        log.info("Успешно обновлен пользователь с ID" + user.getId());
         return user;
     }
 
