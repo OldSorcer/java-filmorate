@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
-import ru.yandex.practicum.filmorate.exception.FilmAlreadyExistException;
-import ru.yandex.practicum.filmorate.exception.FilmDoesNotExistException;
-import ru.yandex.practicum.filmorate.exception.UserAlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
@@ -18,10 +15,10 @@ import java.time.LocalDate;
 
 @SpringBootTest
 class FilmorateApplicationTests {
-	FilmController filmController;
-	UserController userController;
-	Film film;
-	User user;
+	private FilmController filmController;
+	private UserController userController;
+	private Film film;
+	private User user;
 
 	@BeforeEach
 	void beforeEach() {
@@ -60,7 +57,7 @@ class FilmorateApplicationTests {
 	}
 
 	@Test
-	void filmShouldBeAdded() throws ValidationException, FilmAlreadyExistException {
+	void filmShouldBeAdded() {
 		filmController.add(film);
 		Assertions.assertAll(() -> Assertions.assertEquals(1, filmController.getAll().size()),
 				() -> Assertions.assertEquals(film, filmController.getAll().get(0)));
@@ -91,7 +88,7 @@ class FilmorateApplicationTests {
 	}
 
 	@Test
-	void shouldSetLoginIfNameIsEmpty() throws ValidationException, UserAlreadyExistException {
+	void shouldSetLoginIfNameIsEmpty() {
 		String expectedName = "Login";
 
 		user.setName("");
