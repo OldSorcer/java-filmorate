@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @SpringBootTest
 class UserControllerTest {
@@ -21,35 +22,35 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldThrowValidationExceptionIfEmailIsEmpty() {
-        user.setEmail("");
-        Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
+    void shouldReturnUserIfAdded() {
+        Assertions.assertEquals(user, userController.add(user));
     }
 
     @Test
-    void shouldThrowValidationExceptionIfEmailIncorrect() {
-        user.setEmail("Emailmail.ru");
-        Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
-    }
-
-    @Test
-    void shouldThrowValidationExceptionIfLoginIsEmpty() {
-        user.setLogin("");
-        Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
-    }
-
-    @Test
-    void shouldThrowValidationExceptionIfLoginContainsSpace() {
-        user.setLogin("Login login");
-        Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
-    }
-
-    @Test
-    void shouldSetLoginIfNameIsEmpty() {
-        String expectedName = "Login";
-
-        user.setName("");
+    void shouldThrowValidationExceptionIfUserAlreadyExist() {
         userController.add(user);
-        Assertions.assertEquals(expectedName, userController.getAll().get(0).getName());
+        Assertions.assertThrows(ValidationException.class, () -> userController.add(user));
+    }
+
+    @Test
+    void shouldReturnUserIfUpdated() {
+        userController.add(user);
+        user.setName("New name");
+        Assertions.assertEquals(user, userController.update(user));
+    }
+
+    @Test
+    void shouldThrowValidationExceptionIfUserDoesNotExist() {
+        userController.add(user);
+        user.setId(2);
+        Assertions.assertThrows(ValidationException.class, () -> userController.update(user));
+    }
+
+    @Test
+    void shouldReturnUserList() {
+        List<User> expectedList = List.of(user);
+
+        userController.add(user);
+        Assertions.assertEquals(expectedList, userController.getAll());
     }
 }

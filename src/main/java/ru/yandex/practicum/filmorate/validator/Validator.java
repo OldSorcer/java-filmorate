@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.model;
-
-import org.apache.tomcat.jni.Local;
+package ru.yandex.practicum.filmorate.validator;
 
 import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+
 import java.time.LocalDate;
-import java.util.Objects;
 
 public class Validator {
     private final static int MAX_DESCRIPTION_LENGTH = 200;

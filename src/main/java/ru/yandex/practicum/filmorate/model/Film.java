@@ -2,11 +2,7 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Data
 @AllArgsConstructor
