@@ -29,7 +29,7 @@ public class UserController {
 
     @PostMapping
     public User add(@RequestBody User user) {
-       return
+       return inMemoryUserStorage.add(user);
     }
 
     @PutMapping
