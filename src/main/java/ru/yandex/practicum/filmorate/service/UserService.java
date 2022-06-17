@@ -43,6 +43,8 @@ public class UserService {
     }
 
     public List<User> getFriendList(int userId) {
-        return userStorage.getUserById(userId).getFriendsList().stream().map(f -> userStorage.getUserById(f)).collect(Collectors.toList());
+        return userStorage.getUserById(userId)
+                .getFriendsList().stream()
+                .map(f -> userStorage.getUserById(f)).collect(Collectors.toList());
     }
 }
