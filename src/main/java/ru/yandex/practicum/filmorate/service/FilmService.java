@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -15,25 +15,36 @@ import java.util.stream.Collectors;
 public class FilmService {
 
     private FilmStorage filmStorage;
+    private UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
     public void setLike(int userId, int filmId) {
-        filmStorage.getAll().get(filmId).getLikes().add(userId);
+        User user = userStorage.getUserById(userId);
+        filmStorage.getFilmById(filmId).getLikes().add(user.getId());
     }
 
     public void deleteLike(int userId, int filmId) {
-        filmStorage.getAll().get(filmId).getLikes().remove(userId);
+        User user = userStorage.getUserById(userId);
+        filmStorage.getFilmById(filmId).getLikes().add(user.getId());
     }
 
-    public List<Film> getPopularFilms() {
+    public List<Film> getPopularFilms(int count) {
+        if (count == 0) {
+            count = 10;
+        }
         return filmStorage.getAll()
                 .stream()
                 .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
-                .limit(10)
+                .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public FilmStorage getFilmStorage() {
+        return filmStorage;
     }
 }

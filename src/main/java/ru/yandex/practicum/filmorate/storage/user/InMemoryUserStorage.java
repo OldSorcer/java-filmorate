@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.validator.Validator;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class InMemoryUserStorage implements UserStorage{
+public class InMemoryUserStorage implements UserStorage {
     private Map<Integer, User> userList = new HashMap<>();
     private int idCounter = 1;
 
@@ -34,12 +35,11 @@ public class InMemoryUserStorage implements UserStorage{
     public User update(User user) {
         if (!userList.containsKey(user.getId())) {
             log.warn("Ошибка обновления пользователя. Пользователя с таким ID не существует.");
-            throw new ValidationException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Пользователя с таким ID не существует");
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
+                    String.format("Пользователя с ID %d не существует", user.getId()));
         } else if (Validator.isValidUser(user)) {
             userList.put(user.getId(), user);
             log.info("Успешно обновлен пользователь с ID" + user.getId());
-
         }
         return user;
     }
@@ -52,5 +52,14 @@ public class InMemoryUserStorage implements UserStorage{
     @Override
     public void delete(User user) {
         userList.remove(user.getId());
+    }
+
+    @Override
+    public User getUserById(int id) {
+        if (!userList.containsKey(id)) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
+                    String.format("Пользователя с ID %d не существует", id));
+        }
+        return userList.get(id);
     }
 }

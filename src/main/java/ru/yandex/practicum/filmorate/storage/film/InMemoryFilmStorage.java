@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.validator.Validator;
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
+public class InMemoryFilmStorage implements FilmStorage {
     private Map<Integer, Film> filmList = new HashMap<>();
     private int idCounter = 1;
 
@@ -35,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     public Film update(Film film) {
         if (!filmList.containsKey(film.getId())) {
             log.warn("Ошибка обновления фильма. Такого фильма не существует");
-            throw new ValidationException(HttpStatus.INTERNAL_SERVER_ERROR,
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
                     "Такого фильма не существует");
         } else if (Validator.isValidFilm(film)) {
             filmList.put(film.getId(), film);
@@ -52,5 +53,13 @@ public class InMemoryFilmStorage implements FilmStorage{
     @Override
     public void delete(Film film) {
         filmList.remove(film.getId());
+    }
+
+    @Override
+    public Film getFilmById(int id) {
+        if (!filmList.containsKey(id)) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Фильма с ID %d не существует", id));
+        }
+        return filmList.get(id);
     }
 }
