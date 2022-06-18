@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class Film {
+public class Film implements Comparable<Film>{
     private String name;
     private String description;
     private int id;
@@ -25,5 +25,10 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.likes = likes;
+    }
+
+    @Override
+    public int compareTo(Film o) {
+        return o.getLikes().size() - this.getLikes().size();
     }
 }
