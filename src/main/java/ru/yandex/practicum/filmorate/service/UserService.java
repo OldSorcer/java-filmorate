@@ -18,6 +18,22 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    public User add(User user) {
+        return userStorage.add(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
+    }
+
+    public List<User> getAll() {
+        return userStorage.getAll();
+    }
+
+    public User getUserById(int id) {
+        return userStorage.getUserById(id);
+    }
+
     public void addFriend(int userId, int targetUserId) {
         User user = userStorage.getUserById(userId);
         User targetUser = userStorage.getUserById(targetUserId);
@@ -35,16 +51,15 @@ public class UserService {
     public List<User> getCommonFriendsId(int userId, int targetUserId) {
         List<User> userFriends = getFriendList(userId);
         List<User> targetUserFriends = getFriendList(targetUserId);
-        return userFriends.stream().filter(targetUserFriends::contains).collect(Collectors.toList());
-    }
-
-    public UserStorage getUserStorage() {
-        return userStorage;
+        return userFriends.stream()
+                .filter(targetUserFriends::contains)
+                .collect(Collectors.toList());
     }
 
     public List<User> getFriendList(int userId) {
-        return userStorage.getUserById(userId)
-                .getFriendsList().stream()
-                .map(f -> userStorage.getUserById(f)).collect(Collectors.toList());
+        return userStorage.getUserById(userId).getFriendsList()
+                .stream()
+                .map(f -> userStorage.getUserById(f))
+                .collect(Collectors.toList());
     }
 }
