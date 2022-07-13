@@ -3,15 +3,32 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor
-public class Film {
+public class Film implements Comparable<Film>{
     private String name;
     private String description;
     private int id;
     private LocalDate releaseDate;
     private int duration;
-    public final static int MAX_DESCRIPTION_LENGTH = 200;
-    public final static LocalDate LATEST_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    private Set<Integer> likes = new HashSet<>();
+
+    public Film() {
+    }
+
+    public Film(String name, String description, int id, LocalDate releaseDate, int duration) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.likes = likes;
+    }
+
+    @Override
+    public int compareTo(Film o) {
+        return o.getLikes().size() - this.getLikes().size();
+    }
 }

@@ -1,52 +1,68 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.validator.Validator;
+import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private Map<Integer, User> userList = new HashMap<>();
-    private int idCounter = 1;
+    private UserService userService;
+
+    public UserController() {
+
+    }
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public User add(@RequestBody User user) {
-        if (userList.containsKey(user.getId())) {
-            log.warn("Ошибка при добавлении пользователя. Такой пользователь уже существует");
-            throw new ValidationException(HttpStatus.BAD_REQUEST, "Такой пользователь уже существует");
-        } else if (Validator.isValidUser(user)) {
-            user.setId(idCounter++);
-            userList.put(user.getId(), user);
-            log.info("Успешно создан пользователь с id" + user.getId());
-        }
-        return user;
+        return userService.add(user);
     }
 
     @PutMapping
     public User update(@RequestBody User user) {
-        if (!userList.containsKey(user.getId())) {
-            log.warn("Ошибка обновления пользователя. Пользователя с таким ID не существует.");
-            throw new ValidationException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Пользователя с таким ID не существует");
-        } else if (Validator.isValidUser(user)) {
-            userList.put(user.getId(), user);
-            log.info("Успешно обновлен пользователь с ID" + user.getId());
-
-        }
-        return user;
+        return userService.update(user);
     }
 
     @GetMapping
     public List<User> getAll() {
-        return List.copyOf(userList.values());
+        return userService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable int id) {
+        return userService.getUserById(id);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id,
+                          @PathVariable int friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFromFriend(@PathVariable int id,
+                                 @PathVariable int friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriendList(@PathVariable int id) {
+        return userService.getFriendList(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id,
+                                       @PathVariable int otherId) {
+        return userService.getCommonFriendsId(id, otherId);
     }
 }
