@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
+import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -56,12 +57,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriendList(@PathVariable int id) {
+    public Collection<User> getFriendList(@PathVariable int id) {
         return userService.getFriendList(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable int id,
+    public Collection<User> getCommonFriends(@PathVariable int id,
                                        @PathVariable int otherId) {
         return userService.getCommonFriendsId(id, otherId);
     }

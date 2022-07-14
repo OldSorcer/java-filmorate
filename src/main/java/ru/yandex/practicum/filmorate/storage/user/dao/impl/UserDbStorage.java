@@ -1,6 +1,6 @@
-package ru.yandex.practicum.filmorate.storage.user.dao;
+package ru.yandex.practicum.filmorate.storage.user.dao.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -16,7 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class UserDbStorage implements UserStorage {
@@ -53,11 +54,12 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User update(User user) {
         String queryForSearch = "SELECT * FROM users WHERE user_id = ?";
-        User findedUser = jdbcTemplate.queryForObject(queryForSearch, this::makeUser, user.getId());
-        if (Objects.isNull(findedUser)) {
-            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
-                    String.format("Пользователь с ID %d не существует", user.getId()));
+        try {
+            User findedUser = jdbcTemplate.queryForObject(queryForSearch, this::makeUser, user.getId());
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Пользователь с ID %d не найден", user.getId()));
         }
+
         String queryForUpdate = "UPDATE users SET login = ?, user_name = ?, email = ?, birthday = ? WHERE user_id = ?";
         jdbcTemplate.update(queryForUpdate,
                 user.getLogin(),
@@ -78,7 +80,13 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getUserById(int id) {
         String query = "SELECT * FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(query, this::makeUser, id);
+        User user;
+        try {
+            user = jdbcTemplate.queryForObject(query, this::makeUser, id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Пользователь с ID %d не найден", id));
+        }
+        return user;
     }
 
     private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {

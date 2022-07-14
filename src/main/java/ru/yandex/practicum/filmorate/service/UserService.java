@@ -39,7 +39,8 @@ public class UserService {
         User user = userStorage.getUserById(userId);
         User targetUser = userStorage.getUserById(targetUserId);
         user.getFriendsList().add(targetUser.getId());
-        targetUser.getFriendsList().add(user.getId());
+        userStorage.update(user);
+
     }
 
     public void deleteFriend(int userId, int targetUserId) {

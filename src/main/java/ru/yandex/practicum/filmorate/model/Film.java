@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
 public class Film implements Comparable<Film>{
     private String name;
     private String description;
@@ -15,7 +16,7 @@ public class Film implements Comparable<Film>{
     private int duration;
     private Set<Integer> likes = new HashSet<>();
     private Set<Genre> genres = new HashSet<>();
-    private MpaRating mpaRate;
+    private MpaRating mpa;
 
     public Film() {
     }
@@ -26,7 +27,16 @@ public class Film implements Comparable<Film>{
         this.id = id;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.likes = likes;
+    }
+
+    public Film(String name, String description, int id, LocalDate releaseDate, int duration, Set<Genre> genres, MpaRating mpaRate) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.genres = genres;
+        this.mpa = mpaRate;
     }
 
     @Override
