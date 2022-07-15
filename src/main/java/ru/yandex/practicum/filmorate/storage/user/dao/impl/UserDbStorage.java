@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user.dao.impl;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -11,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
+import java.security.Key;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,72 +30,55 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User add(User user) {
         Validator.isValidUser(user);
-        String query = "INSERT INTO users (login, user_name, email, birthday) VALUES (?, ?, ?, ?)";
+        String sqlQuery = "INSERT INTO USERS (login, user_name, email, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(query, new String[] {"user_id"});
+            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[] {"user_id"});
             ps.setString(1, user.getLogin());
             ps.setString(2, user.getName());
             ps.setString(3, user.getEmail());
             ps.setDate(4, Date.valueOf(user.getBirthday()));
             return ps;
-            }, keyHolder);
-        int userId = keyHolder.getKey().intValue();
-        String findUserQuery = "SELECT * FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(findUserQuery, this::makeUser, userId);
+        }, keyHolder);
+        user.setId(keyHolder.getKey().intValue());
+        return user;
     }
 
     @Override
     public void delete(User user) {
-        String query = "DELETE FROM users WHERE user_id = ?";
-        jdbcTemplate.update(query, user.getId());
+        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sqlQuery, user.getId());
     }
 
     @Override
     public User update(User user) {
-        String queryForSearch = "SELECT * FROM users WHERE user_id = ?";
-        try {
-            User findedUser = jdbcTemplate.queryForObject(queryForSearch, this::makeUser, user.getId());
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Пользователь с ID %d не найден", user.getId()));
-        }
-
-        String queryForUpdate = "UPDATE users SET login = ?, user_name = ?, email = ?, birthday = ? WHERE user_id = ?";
-        jdbcTemplate.update(queryForUpdate,
-                user.getLogin(),
-                user.getName(),
-                user.getEmail(),
-                Date.valueOf(user.getBirthday()),
-                user.getId());
-        String queryForSearchUpdatedUser = "SELECT * FROM users WHERE user_id = ?";
-        return jdbcTemplate.queryForObject(queryForSearchUpdatedUser,this::makeUser, user.getId());
+        User findUser = getUserById(user.getId());
+        String sqlQuery = "UPDATE users SET user_name = ?, login = ?, email = ?, birthday = ? WHERE user_id = ?";
+        jdbcTemplate.update(sqlQuery, user.getName(), user.getLogin(), user.getEmail(), Date.valueOf(user.getBirthday()), user.getId());
+        return user;
     }
 
     @Override
     public List<User> getAll() {
-        String query = "SELECT * FROM users";
-        return jdbcTemplate.query(query, this::makeUser);
+        String sqlQuery = "SELECT * FROM users;";
+        List<User> userList = jdbcTemplate.query(sqlQuery, this::makeUser);
+        return userList;
     }
 
     @Override
     public User getUserById(int id) {
-        String query = "SELECT * FROM users WHERE user_id = ?";
-        User user;
-        try {
-            user = jdbcTemplate.queryForObject(query, this::makeUser, id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Пользователь с ID %d не найден", id));
-        }
-        return user;
+        String sqlQuery = "SELECT * FROM users WHERE user_id = ?";
+        List<User> user = jdbcTemplate.query(sqlQuery, this::makeUser, id);
+        return user.stream().findFirst().orElseThrow(() -> new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Пользователь с ID %d не найден", id)));
     }
 
-    private User makeUser(ResultSet resultSet, int rowNum) throws SQLException {
+    public User makeUser(ResultSet rs, int rowNum) throws SQLException {
         User user = new User();
-        user.setId(resultSet.getInt("user_Id"));
-        user.setName(resultSet.getString("user_name"));
-        user.setEmail(resultSet.getString("email"));
-        user.setLogin(resultSet.getString("login"));
-        user.setBirthday(resultSet.getDate("birthday").toLocalDate());
+        user.setLogin(rs.getString("login"));
+        user.setEmail(rs.getString("email"));
+        user.setName(rs.getString("user_name"));
+        user.setBirthday(rs.getDate("birthday").toLocalDate());
+        user.setId(rs.getInt("user_id"));
         return user;
     }
 }

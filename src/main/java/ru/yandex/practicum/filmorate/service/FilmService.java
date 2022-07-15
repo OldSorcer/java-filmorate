@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.impl.LikesDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
@@ -17,11 +18,13 @@ public class FilmService {
 
     private FilmStorage filmStorage;
     private UserStorage userStorage;
+    private LikesDao likesDao;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage, LikesDao likesDao) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this. likesDao = likesDao;
     }
 
     public Film add(Film film) {
@@ -33,13 +36,11 @@ public class FilmService {
     }
 
     public void setLike(int userId, int filmId) {
-        User user = userStorage.getUserById(userId);
-        filmStorage.getFilmById(filmId).getLikes().add(user.getId());
+        likesDao.addLike(userId, filmId);
     }
 
     public void deleteLike(int userId, int filmId) {
-        User user = userStorage.getUserById(userId);
-        filmStorage.getFilmById(filmId).getLikes().add(user.getId());
+        likesDao.deleteLike(userId, filmId);
     }
 
     public List<Film> getPopularFilms(int count) {

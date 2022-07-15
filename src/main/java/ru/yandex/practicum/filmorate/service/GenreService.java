@@ -3,29 +3,24 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.user.dao.GenreDao;
+import ru.yandex.practicum.filmorate.storage.film.dao.impl.GenresDao;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 
 @Service
 public class GenreService {
-    GenreDao genreDao;
+    private final GenresDao genresDao;
 
     @Autowired
-    public GenreService(GenreDao genreDao) {
-        this.genreDao = genreDao;
+    public GenreService(GenresDao genresDao) {
+        this.genresDao = genresDao;
     }
 
-    public Collection<Genre> getAll() {
-        return genreDao.getAll();
+    public List<Genre> getAll() {
+        return genresDao.getAll();
     }
 
     public Genre getById(int id) {
-        return genreDao.getById(id);
-    }
-
-    public Set<Genre> getByFilmId(int filmId) {
-        return genreDao.getFilmGenres(filmId);
+        return genresDao.getById(id);
     }
 }

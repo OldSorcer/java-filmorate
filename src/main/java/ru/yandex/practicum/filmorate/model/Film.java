@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -15,7 +17,7 @@ public class Film implements Comparable<Film>{
     private LocalDate releaseDate;
     private int duration;
     private Set<Integer> likes = new HashSet<>();
-    private Set<Genre> genres = new HashSet<>();
+    private List<Genre> genres = new ArrayList<>();
     private MpaRating mpa;
 
     public Film() {
@@ -29,7 +31,7 @@ public class Film implements Comparable<Film>{
         this.duration = duration;
     }
 
-    public Film(String name, String description, int id, LocalDate releaseDate, int duration, Set<Genre> genres, MpaRating mpaRate) {
+    public Film(String name, String description, int id, LocalDate releaseDate, int duration, List<Genre> genres, MpaRating mpaRate) {
         this.name = name;
         this.description = description;
         this.id = id;

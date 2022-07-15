@@ -3,8 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.impl.FriendsDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,10 +15,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private UserStorage userStorage;
+    private FriendsDao friendsDao;
 
     @Autowired
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendsDao friendsDao) {
         this.userStorage = userStorage;
+        this.friendsDao = friendsDao;
     }
 
     public User add(User user) {
@@ -36,32 +40,18 @@ public class UserService {
     }
 
     public void addFriend(int userId, int targetUserId) {
-        User user = userStorage.getUserById(userId);
-        User targetUser = userStorage.getUserById(targetUserId);
-        user.getFriendsList().add(targetUser.getId());
-        userStorage.update(user);
-
+        friendsDao.addFriend(userId, targetUserId);
     }
 
     public void deleteFriend(int userId, int targetUserId) {
-        User user = userStorage.getUserById(userId);
-        User targetUser = userStorage.getUserById(targetUserId);
-        user.getFriendsList().remove(targetUserId);
-        targetUser.getFriendsList().remove(userId);
+        friendsDao.deleteFriend(userId, targetUserId);
     }
 
     public List<User> getCommonFriendsId(int userId, int targetUserId) {
-        List<User> userFriends = getFriendList(userId);
-        List<User> targetUserFriends = getFriendList(targetUserId);
-        return userFriends.stream()
-                .filter(targetUserFriends::contains)
-                .collect(Collectors.toList());
+        return friendsDao.getCommonFriends(userId, targetUserId);
     }
 
     public List<User> getFriendList(int userId) {
-        return userStorage.getUserById(userId).getFriendsList()
-                .stream()
-                .map(f -> userStorage.getUserById(f))
-                .collect(Collectors.toList());
+        return friendsDao.getFriends(userId);
     }
 }
