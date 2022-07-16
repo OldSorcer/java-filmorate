@@ -3,19 +3,17 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Friendship;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.storage.user.dao.impl.FriendsDao;
+import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    private UserStorage userStorage;
-    private FriendsDao friendsDao;
+    private final UserStorage userStorage;
+    private final FriendsDao friendsDao;
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendsDao friendsDao) {

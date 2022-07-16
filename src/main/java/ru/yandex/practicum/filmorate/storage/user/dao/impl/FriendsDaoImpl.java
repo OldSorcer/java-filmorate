@@ -1,17 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.user.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class FriendsDaoImpl implements FriendsDao{
+public class FriendsDaoImpl implements FriendsDao {
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userStorage;
 

@@ -1,29 +1,32 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class FilmDbStorageTest {
+class LikesDaoImplTest {
+    private final LikesDaoImpl likesDao;
+    private final UserDbStorage userDbStorage;
     private final FilmDbStorage filmDbStorage;
+    private final User userOne = new User("LoginOne",
+            "NameOne",
+            "Email1@mail.ru",
+            1,
+            LocalDate.now());
     private final Film film = new Film("Film name",
             "Description",
             1,
@@ -32,37 +35,20 @@ class FilmDbStorageTest {
             List.of(new Genre(1, "Комедия")),
             new MpaRating(1, "G"));
 
+
     @Test
     @Order(1)
-    public void addFilm() {
+    public void addAndGetLike() {
+        userDbStorage.add(userOne);
         filmDbStorage.add(film);
-        assertEquals(film, filmDbStorage.getFilmById(1));
+        likesDao.addLike(1, 1);
+        Assertions.assertEquals(List.of(1), likesDao.getLikes(1));
     }
 
     @Test
     @Order(2)
-    public void getFilmById() {
-        assertEquals(film, filmDbStorage.getFilmById(1));
-    }
-
-    @Test
-    @Order(3)
-    public void getAllFilms() {
-        assertEquals(List.of(film), filmDbStorage.getAll());
-    }
-
-    @Test
-    @Order(4)
-    public void updateFilm() {
-        film.setName("New name");
-        filmDbStorage.update(film);
-        assertEquals(film, filmDbStorage.getFilmById(1));
-    }
-
-    @Test
-    @Order(5)
-    public void deleteFilm() {
-        filmDbStorage.delete(film);
-        assertTrue(filmDbStorage.getAll().isEmpty());
+    public void deleteLike() {
+        likesDao.deleteLike(1, 1);
+        Assertions.assertTrue(likesDao.getLikes(1).isEmpty());
     }
 }

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -8,10 +10,15 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.GenresDao;
+import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
+import ru.yandex.practicum.filmorate.storage.film.dao.MpaRateDao;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
-import java.security.Key;
-import java.sql.*;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -23,6 +30,7 @@ public class FilmDbStorage implements FilmStorage {
     private final MpaRateDao mpaRateDao;
     private final LikesDao likesDao;
 
+    @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate, GenresDao genresDao, MpaRateDao mpaRateDao, LikesDao likesDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.genresDao = genresDao;
@@ -37,7 +45,7 @@ public class FilmDbStorage implements FilmStorage {
                 "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[] {"film_id"});
+            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
             ps.setString(1, film.getName());
             ps.setString(2, film.getDescription());
             ps.setDate(3, Date.valueOf(film.getReleaseDate()));
@@ -88,7 +96,7 @@ public class FilmDbStorage implements FilmStorage {
                         String.format("Фильм с ID %d не найден", id)));
     }
 
-    private Film makeFilm (ResultSet rs, int rowNum) throws SQLException {
+    private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
         film.setName(rs.getString("film_name"));
         film.setDescription(rs.getString("description"));

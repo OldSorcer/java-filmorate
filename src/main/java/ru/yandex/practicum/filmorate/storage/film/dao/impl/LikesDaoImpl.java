@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDbStorage;
 
 import java.sql.ResultSet;
@@ -12,10 +12,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class LikesDaoImpl implements LikesDao{
+public class LikesDaoImpl implements LikesDao {
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userDbStorage;
 
+    @Autowired
     public LikesDaoImpl(JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.userDbStorage = userDbStorage;

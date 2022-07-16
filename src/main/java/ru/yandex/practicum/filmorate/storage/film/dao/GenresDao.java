@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film.dao.impl;
+package ru.yandex.practicum.filmorate.storage.film.dao;
 
 import ru.yandex.practicum.filmorate.model.Genre;
 

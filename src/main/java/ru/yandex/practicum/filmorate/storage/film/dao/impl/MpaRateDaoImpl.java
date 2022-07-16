@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.MpaRating;
+import ru.yandex.practicum.filmorate.storage.film.dao.MpaRateDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +16,7 @@ import java.util.List;
 public class MpaRateDaoImpl implements MpaRateDao {
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public MpaRateDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -33,7 +36,7 @@ public class MpaRateDaoImpl implements MpaRateDao {
         return jdbcTemplate.query(sqlQuery, this::makeMpaRating);
     }
 
-    private MpaRating makeMpaRating (ResultSet rs, int rowNum) throws SQLException {
+    private MpaRating makeMpaRating(ResultSet rs, int rowNum) throws SQLException {
         MpaRating mpaRating = new MpaRating();
         mpaRating.setId(rs.getInt("mpa_rate_id"));
         mpaRating.setName(rs.getString("mpa_rate_name"));
