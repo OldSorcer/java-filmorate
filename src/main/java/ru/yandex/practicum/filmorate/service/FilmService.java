@@ -47,11 +47,7 @@ public class FilmService {
         if (count == 0) {
             count = 10;
         }
-        return filmStorage.getAll()
-                .stream()
-                .sorted()
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.getPopularFilms(count);
     }
 
     public Film getFilmById(int id) {

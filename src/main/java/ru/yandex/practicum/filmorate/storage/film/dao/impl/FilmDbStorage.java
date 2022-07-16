@@ -96,6 +96,16 @@ public class FilmDbStorage implements FilmStorage {
                         String.format("Фильм с ID %d не найден", id)));
     }
 
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        String sqlQuery = "SELECT f.FILM_ID, film_name, description, release_date, duration, mpa_rate_id FROM films AS f " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "GROUP BY f.FILM_ID " +
+                "ORDER BY COUNT(fl.USER_ID) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, count);
+    }
+
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
         film.setName(rs.getString("film_name"));

@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.validator.Validator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -61,5 +62,10 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Фильма с ID %d не существует", id));
         }
         return filmList.get(id);
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        return getAll().stream().sorted().limit(count).collect(Collectors.toList());
     }
 }
