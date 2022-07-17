@@ -12,19 +12,16 @@ import java.util.List;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class MpaRateDaoImplTest {
     private final MpaRateDaoImpl mpaRateDao;
 
     @Test
-    @Order(1)
     public void getById1() {
         MpaRating expected = new MpaRating(1, "G");
         Assertions.assertEquals(expected, mpaRateDao.getById(1));
     }
 
     @Test
-    @Order(2)
     public void getAll() {
         List<MpaRating> expected = List.of(new MpaRating(1, "G"),
                 new MpaRating(2, "PG"),

@@ -5,17 +5,19 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:scriptTest.sql")
 class GenreDaoImplTest {
     private final GenreDaoImpl genreDao;
     private final FilmDbStorage filmDbStorage;
@@ -24,25 +26,23 @@ class GenreDaoImplTest {
             1,
             LocalDate.now(),
             200,
+            Set.of(),
             List.of(new Genre(1, "Комедия")),
             new MpaRating(1, "G"));
 
     @Test
-    @Order(1)
     public void addFilmGenres() {
         filmDbStorage.add(film);
-        Assertions.assertEquals(film.getGenres(), genreDao.getByFilmId(film.getId()));
+        Assertions.assertEquals(film.getGenres(), genreDao.getByFilmId(1));
     }
 
     @Test
-    @Order(2)
     public void getGenreById1() {
         Genre expected = new Genre(1, "Комедия");
         Assertions.assertEquals(expected, genreDao.getById(1));
     }
 
     @Test
-    @Order(3)
     public void getAll() {
         List<Genre> expected = List.of(new Genre(1, "Комедия"),
                 new Genre(2, "Драма"),
@@ -54,14 +54,14 @@ class GenreDaoImplTest {
     }
 
     @Test
-    @Order(4)
     public void getFilmGenres() {
+        filmDbStorage.add(film);
         Assertions.assertEquals(film.getGenres(), genreDao.getByFilmId(1));
     }
 
     @Test
-    @Order(5)
-    public void removeGenress() {
+    public void removeGenres() {
+        filmDbStorage.add(film);
         genreDao.removeGenres(1);
         Assertions.assertTrue(genreDao.getByFilmId(1).isEmpty());
     }

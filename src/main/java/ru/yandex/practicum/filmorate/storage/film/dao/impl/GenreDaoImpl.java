@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class GenreDaoImpl implements GenresDao {
-    JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public GenreDaoImpl(JdbcTemplate jdbcTemplate) {

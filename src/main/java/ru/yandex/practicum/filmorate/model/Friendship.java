@@ -1,16 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@AllArgsConstructor
+@NoArgsConstructor
 public class Friendship {
     private int userId;
     private int friendId;
-
-    public Friendship() {
-    }
-
-    public Friendship(int userId, int friendId) {
-        this.userId = userId;
-        this.friendId = friendId;
-    }
 
     public int getUserId() {
         return userId;
