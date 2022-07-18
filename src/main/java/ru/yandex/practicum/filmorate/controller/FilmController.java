@@ -25,38 +25,45 @@ public class FilmController {
 
     @PostMapping
     public Film add(@RequestBody Film film) {
+        log.info("Получен POST запрос к эндпоинту /films");
         return filmService.add(film);
     }
 
     @PutMapping
     public Film update(@RequestBody Film film) {
+        log.info("Получен PUT запрос к эндпоинту /films");
         return filmService.update(film);
     }
 
     @GetMapping
     public List<Film> getAll() {
+        log.info("Получен GET запрос к эндпоинту /films");
         return filmService.getAll();
     }
 
     @GetMapping("/{id}")
     public Film getFilmById(@PathVariable int id) {
+        log.info("Получен GEt запрос к эндпоинту /films/{}", id);
         return filmService.getFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
     public void setLike(@PathVariable int id,
                         @PathVariable int userId) {
+        log.info("Получен PUT запрос к эндпоинту /{}/like/{}", id, userId);
         filmService.setLike(userId, id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     public void deleteLike(@PathVariable int id,
                            @PathVariable int userId) {
+        log.info("Получен DELETE запрос к эндпоинту /{}/like/{}", id, userId);
         filmService.deleteLike(userId, id);
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "0") int count) {
+        log.info("Получен GET запрос к эндпоинту /popular");
         return filmService.getPopularFilms(count);
     }
 }

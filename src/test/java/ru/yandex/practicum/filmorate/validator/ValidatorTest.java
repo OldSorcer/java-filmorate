@@ -5,10 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 class ValidatorTest {
     private Film film;
@@ -16,12 +20,15 @@ class ValidatorTest {
 
     @BeforeEach
     void beforeEach() {
-        film = new Film("Name of film",
-                "Description of a very interesting movie with kittens, pink ponies and unicorns",
+        film = new Film("Film name",
+                "Description",
                 1,
                 LocalDate.now(),
-                120);
-        user = new User("Login", "Name", "Email@mail.ru", 1, LocalDate.now());
+                200,
+                Set.of(),
+                List.of(new Genre(1, "Комедия")),
+                new MpaRating(1, "G"));
+        user = new User("Login", "Name", "Email@mail.ru", 1, LocalDate.now(), Set.of());
     }
 
     @Test

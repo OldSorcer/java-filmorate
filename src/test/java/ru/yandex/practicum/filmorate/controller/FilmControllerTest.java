@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 class FilmControllerTest {
@@ -20,11 +21,14 @@ class FilmControllerTest {
     @BeforeEach
     public void beforeEach() {
         filmController = new FilmController();
-        film = new Film("Name of film",
-                "Description of a very interesting movie with kittens, pink ponies and unicorns",
+        film = new Film("Film name",
+                "Description",
                 1,
                 LocalDate.now(),
-                120);
+                200,
+                Set.of(),
+                List.of(new Genre(1, "Комедия")),
+                new MpaRating(1, "G"));
     }
 
     @Test

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @SpringBootTest
 class UserControllerTest {
@@ -19,7 +20,7 @@ class UserControllerTest {
     @BeforeEach
     public void beforeEach() {
         userController = new UserController();
-        user = new User("Login", "Name", "Email@mail.ru", 1, LocalDate.now());
+        user = new User("Login", "Name", "Email@mail.ru", 1, LocalDate.now(), Set.of());
     }
 
     @Test
