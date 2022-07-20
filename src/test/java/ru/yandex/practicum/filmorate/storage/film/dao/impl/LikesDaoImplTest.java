@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +39,8 @@ class LikesDaoImplTest {
             200,
             Set.of(),
             List.of(new Genre(1, "Комедия")),
-            new MpaRating(1, "G"));
+            new MpaRating(1, "G"),
+            new ArrayList<>());
 
 
     @Test

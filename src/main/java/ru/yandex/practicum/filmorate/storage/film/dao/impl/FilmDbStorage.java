@@ -86,7 +86,11 @@ public class FilmDbStorage implements FilmStorage {
             directorDao.deleteFilmDirectors(film.getId());
             directorDao.addFilmDirectors(film.getDirectors(), film.getId());
         }
-        return getFilmById(film.getId());
+        Film updatedFilm = getFilmById(film.getId());
+        if (film.getDirectors().isEmpty()) {
+            updatedFilm.setDirectors(null);
+        }
+        return updatedFilm;
     }
 
     @Override
