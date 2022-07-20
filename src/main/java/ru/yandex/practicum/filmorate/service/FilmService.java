@@ -42,11 +42,8 @@ public class FilmService {
         likesDao.deleteLike(userId, filmId);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        if (count == 0) {
-            count = 10;
-        }
-        return filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(int count, int genreId, int year) {
+        return filmStorage.getPopularFilms(count, genreId, year);
     }
 
     public Film getFilmById(int id) {
