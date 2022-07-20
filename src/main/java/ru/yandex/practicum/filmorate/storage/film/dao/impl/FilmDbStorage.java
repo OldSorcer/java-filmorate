@@ -107,7 +107,8 @@ public class FilmDbStorage implements FilmStorage {
             return getPopularFilmsNonGenre(count, year);
         }
         String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
-                "FROM films AS f LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "FROM films AS f " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
                 "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id " +
                 "WHERE fg.genre_id = ? AND EXTRACT(YEAR FROM (f.release_date)) = ?" +
                 "GROUP BY f.film_id " +
