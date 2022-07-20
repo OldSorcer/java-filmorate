@@ -57,4 +57,9 @@ public class FilmService {
     public List<Film> getAll() {
         return filmStorage.getAll();
     }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userStorage.getUserById(userId).getId(),
+                userStorage.getUserById(friendId).getId());
+    }
 }
