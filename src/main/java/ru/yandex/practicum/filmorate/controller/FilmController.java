@@ -66,4 +66,10 @@ public class FilmController {
         log.info("Получен GET запрос к эндпоинту /popular");
         return filmService.getPopularFilms(count);
     }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsByDirectorId(@PathVariable int directorId,
+                                           @RequestParam String sortBy) {
+        return filmService.getFilmsByDirectorId(directorId, sortBy);
+    }
 }
