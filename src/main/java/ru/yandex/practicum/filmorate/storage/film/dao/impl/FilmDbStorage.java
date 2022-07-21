@@ -68,9 +68,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        Film findFilm = getFilmById(film.getId());
-        String sqlQuery = "UPDATE films SET film_name = ?, description = ?, release_date = ?, duration = ?, mpa_rate_id = ? WHERE film_id = ?";
-        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
+        String sqlQuery = "UPDATE films " +
+                "SET film_name = ?, description = ?, release_date = ?, duration = ?, mpa_rate_id = ? " +
+                "WHERE film_id = ?";
+        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+                film.getDuration(), film.getMpa().getId(), film.getId());
         if (film.getGenres().isEmpty()) {
             genresDao.removeGenres(film.getId());
         } else {
@@ -97,15 +99,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilms(int count, int genreId, int year) {
-        if ((year == 0) && (genreId == 0)) {
-            return getPopularFilmsNonGenresYear(count);
-        }
-        if (year == 0) {
-            return getPopularFilmsNonYear(count, genreId);
-        }
-        if (genreId == 0) {
-            return getPopularFilmsNonGenre(count, year);
-        }
         String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
                 "FROM films AS f " +
                 "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
@@ -117,6 +110,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, year, count);
     }
 
+    @Override
     public List<Film> getPopularFilmsNonGenresYear(int count) {
         String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
                 "FROM films AS f " +
@@ -127,6 +121,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm, count);
     }
 
+    @Override
     public List<Film> getPopularFilmsNonYear(int count, int genreId) {
         String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
                 "FROM films AS f " +
@@ -139,6 +134,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
     }
 
+    @Override
     public List<Film> getPopularFilmsNonGenre(int count, int year) {
         String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
                 "FROM films AS f " +

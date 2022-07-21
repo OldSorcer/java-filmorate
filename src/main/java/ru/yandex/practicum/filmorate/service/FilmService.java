@@ -43,6 +43,15 @@ public class FilmService {
     }
 
     public List<Film> getPopularFilms(int count, int genreId, int year) {
+        if ((year == 0) && (genreId == 0)) {
+            return filmStorage.getPopularFilmsNonGenresYear(count);
+        }
+        if (year == 0) {
+            return filmStorage.getPopularFilmsNonYear(count, genreId);
+        }
+        if (genreId == 0) {
+            return filmStorage.getPopularFilmsNonGenre(count, year);
+        }
         return filmStorage.getPopularFilms(count, genreId, year);
     }
 
