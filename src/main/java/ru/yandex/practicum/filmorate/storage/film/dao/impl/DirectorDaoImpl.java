@@ -58,7 +58,7 @@ public class DirectorDaoImpl implements DirectorDao {
 
     @Override
     public Director update(Director director) {
-        getById(director.getId());
+        Director foundDirector = getById(director.getId());
         String sqlQuery = "UPDATE directors SET director_name = ? WHERE director_id = ?";
         jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
         return director;
@@ -78,12 +78,12 @@ public class DirectorDaoImpl implements DirectorDao {
     }
 
     @Override
-    public void addFilmDirectors(List<Director> director, int filmId) {
+    public void addFilmDirectors(List<Director> directors, int filmId) {
         String sqlQuery = "MERGE INTO films_directors (film_id, director_id) " +
                 "KEY (film_id, director_id) " +
                 "VALUES (?, ?)";
-        for (Director value : director) {
-            jdbcTemplate.update(sqlQuery, filmId, value.getId());
+        for (Director director : directors) {
+            jdbcTemplate.update(sqlQuery, filmId, director.getId());
         }
     }
 

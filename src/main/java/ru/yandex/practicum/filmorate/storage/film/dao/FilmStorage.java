@@ -10,7 +10,6 @@ public interface FilmStorage {
     Film update(Film film);
     List<Film> getAll();
     Film getFilmById(int id);
-    List<Film> getPopularFilms(int count);
     List<Film> getFilmsByDirectorId(int directorId, String sortedBy);
     List<Film> getPopularFilms(int count, int genreId, int year);
     List<Film> getPopularFilmsNonGenresYear(int count);
