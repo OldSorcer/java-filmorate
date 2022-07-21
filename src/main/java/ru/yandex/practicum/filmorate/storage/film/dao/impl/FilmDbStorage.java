@@ -68,9 +68,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film update(Film film) {
-        Film findFilm = getFilmById(film.getId());
-        String sqlQuery = "UPDATE films SET film_name = ?, description = ?, release_date = ?, duration = ?, mpa_rate_id = ? WHERE film_id = ?";
-        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()), film.getDuration(), film.getMpa().getId(), film.getId());
+        String sqlQuery = "UPDATE films " +
+                "SET film_name = ?, description = ?, release_date = ?, duration = ?, mpa_rate_id = ? " +
+                "WHERE film_id = ?";
+        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+                film.getDuration(), film.getMpa().getId(), film.getId());
         if (film.getGenres().isEmpty()) {
             genresDao.removeGenres(film.getId());
         } else {
@@ -96,13 +98,52 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getPopularFilms(int count) {
-        String sqlQuery = "SELECT f.FILM_ID, film_name, description, release_date, duration, mpa_rate_id FROM films AS f " +
+    public List<Film> getPopularFilms(int count, int genreId, int year) {
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
+                "FROM films AS f " +
                 "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
-                "GROUP BY f.FILM_ID " +
-                "ORDER BY COUNT(fl.USER_ID) DESC " +
+                "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id " +
+                "WHERE fg.genre_id = ? AND EXTRACT(YEAR FROM (f.release_date)) = ?" +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(DISTINCT fl.user_id) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, year, count);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsNonGenresYear(int count) {
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
+                "FROM films AS f " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(DISTINCT fl.user_id) DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::makeFilm, count);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsNonYear(int count, int genreId) {
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
+                "FROM films AS f " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "LEFT JOIN films_genres AS fg ON f.film_id = fg.film_id " +
+                "WHERE fg.genre_id = ?" +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(DISTINCT fl.user_id) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, genreId, count);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsNonGenre(int count, int year) {
+        String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
+                "FROM films AS f " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "WHERE EXTRACT(YEAR FROM (f.release_date)) = ?" +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(DISTINCT fl.user_id) DESC " +
+                "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, year, count);
     }
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
