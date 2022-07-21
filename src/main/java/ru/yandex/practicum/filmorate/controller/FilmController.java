@@ -68,4 +68,9 @@ public class FilmController {
         log.info("Получен GET запрос к эндпоинту /popular?count={limit}&genreId={genreId}&year={year}");
         return filmService.getPopularFilms(count, genreId, year);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilmById(@PathVariable int id) {
+        filmService.deleteFilmById(id);
+    }
 }

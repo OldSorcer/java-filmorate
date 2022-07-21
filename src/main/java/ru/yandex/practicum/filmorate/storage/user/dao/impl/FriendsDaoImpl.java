@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.user.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
 
@@ -42,6 +44,7 @@ public class FriendsDaoImpl implements FriendsDao {
 
     @Override
     public List<User> getFriends(int userId) {
+        User foundUser = userStorage.getUserById(userId);
         String sqlQuery = "SELECT * FROM users WHERE user_id IN (SELECT friend_id FROM friendships WHERE user_id = ?)";
         List<User> userFriends = jdbcTemplate.query(sqlQuery, userStorage::makeUser, userId);
         return userFriends;

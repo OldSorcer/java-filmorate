@@ -52,4 +52,8 @@ public class UserService {
     public List<User> getFriendList(int userId) {
         return friendsDao.getFriends(userId);
     }
+
+    public void deleteUserById(int id) {
+        userStorage.deleteUserById(id);
+    }
 }

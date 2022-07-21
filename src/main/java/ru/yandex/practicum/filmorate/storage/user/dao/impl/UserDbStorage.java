@@ -69,6 +69,12 @@ public class UserDbStorage implements UserStorage {
         return user.stream().findFirst().orElseThrow(() -> new EntityNotFoundException(HttpStatus.NOT_FOUND, String.format("Пользователь с ID %d не найден", id)));
     }
 
+    @Override
+    public void deleteUserById(int id) {
+        String sqlQuery = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
+    }
+
     public User makeUser(ResultSet rs, int rowNum) throws SQLException {
         User user = new User();
         user.setLogin(rs.getString("login"));

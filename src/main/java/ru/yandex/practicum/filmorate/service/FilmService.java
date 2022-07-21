@@ -62,4 +62,8 @@ public class FilmService {
     public List<Film> getAll() {
         return filmStorage.getAll();
     }
+
+    public void deleteFilmById(int id) {
+        filmStorage.deleteFilmById(id);
+    }
 }
