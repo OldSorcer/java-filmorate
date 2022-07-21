@@ -44,7 +44,6 @@ public class DirectorDaoImpl implements DirectorDao {
 
     @Override
     public Director add(Director director) {
-        Validator.isValidDirector(director);
         String sqlQuery = "INSERT INTO directors (director_name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -58,7 +57,6 @@ public class DirectorDaoImpl implements DirectorDao {
 
     @Override
     public Director update(Director director) {
-        Director foundDirector = getById(director.getId());
         String sqlQuery = "UPDATE directors SET director_name = ? WHERE director_id = ?";
         jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
         return director;

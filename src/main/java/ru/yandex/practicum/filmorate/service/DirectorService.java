@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.List;
 
@@ -30,10 +31,13 @@ public class DirectorService {
     }
 
     public Director update(Director director) {
+        Validator.isValidDirector(director);
+        Director foundedDirector = directorDao.getById(director.getId());
         return directorDao.update(director);
     }
 
     public Director add(Director director) {
+        Validator.isValidDirector(director);
         return directorDao.add(director);
     }
 }
