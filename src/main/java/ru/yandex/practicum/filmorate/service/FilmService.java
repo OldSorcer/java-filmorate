@@ -70,4 +70,9 @@ public class FilmService {
     public void deleteFilmById(int id) {
         filmStorage.deleteFilmById(id);
     }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userStorage.getUserById(userId).getId(),
+                userStorage.getUserById(friendId).getId());
+    }
 }
