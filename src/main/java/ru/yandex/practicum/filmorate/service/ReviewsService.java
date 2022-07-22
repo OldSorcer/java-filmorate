@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewsDao;
+<<<<<<< HEAD
 import ru.yandex.practicum.filmorate.validator.Validator;
 
+=======
+>>>>>>> origin/add-reviews
 import java.util.List;
 
 @Service
@@ -25,7 +28,10 @@ public class ReviewsService {
     }
 
     public Reviews addReviews(Reviews reviews) {
+<<<<<<< HEAD
         Validator.isValidReview(reviews);
+=======
+>>>>>>> origin/add-reviews
         userService.getUserById(reviews.getUserId());
         filmService.getFilmById(reviews.getFilmId());
         reviewsDao.addReviews(reviews);
@@ -72,10 +78,13 @@ public class ReviewsService {
     }
 
     public List<Reviews> getAllReviewsByFilmId(int filmId, int count) {
+<<<<<<< HEAD
         if (filmId == 0) {
             return reviewsDao.getAllReviews();
         } else {
             return reviewsDao.getReviewsByFilmId(filmId, count);
         }
+
+>>>>>>> origin/add-reviews
     }
 }
