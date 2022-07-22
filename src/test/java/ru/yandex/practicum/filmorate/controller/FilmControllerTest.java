@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +29,8 @@ class FilmControllerTest {
                 200,
                 Set.of(),
                 List.of(new Genre(1, "Комедия")),
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                new ArrayList<>());
     }
 
     @Test

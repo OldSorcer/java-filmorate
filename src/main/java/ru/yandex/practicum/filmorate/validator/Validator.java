@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.validator;
 
 import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -25,6 +26,14 @@ public class Validator {
         return isValidLogin(user.getLogin()) &&
                 isValidEmail(user.getEmail()) &&
                 isValidBirthDay(user.getBirthday());
+    }
+
+    public static boolean isValidDirector(Director director) {
+        if (director.getName().isBlank()) {
+            throw new ValidationException(HttpStatus.BAD_REQUEST,
+                    "Имя режиссера не должно быть пустым");
+        }
+        return true;
     }
 
     private static boolean isValidFilmName(String name) {
