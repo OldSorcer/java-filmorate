@@ -104,23 +104,16 @@ public class ReviewsDbStorage implements ReviewsDao {
     }
 
     @Override
-    public List<Reviews> getAllReviewsByFilmId(int filmId, int count) {
-        if (filmId == 0) {
-            return getAllReviews();
-        } else {
-            return getReviewsByFilmId(filmId, count);
-        }
-    }
-
-    private List<Reviews> getAllReviews() {
+    public List<Reviews> getAllReviews() {
         String sqlQuery = "SELECT * " +
                           "FROM reviews " +
                           "GROUP BY review_id " +
-                         "ORDER BY useful DESC ";
+                          "ORDER BY useful DESC ";
         return jdbcTemplate.query(sqlQuery, this::makeReview);
     }
 
-    private List<Reviews> getReviewsByFilmId(int filmId, int count) {
+    @Override
+    public List<Reviews> getReviewsByFilmId(int filmId, int count) {
         String sqlQuery = "SELECT * " +
                           "FROM reviews " +
                           "WHERE film_id = ? " +
