@@ -77,6 +77,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
+        log.info("Получен DELETE запрос к эндпоинту /users/{}", id);
         userService.deleteUserById(id);
     }
 }

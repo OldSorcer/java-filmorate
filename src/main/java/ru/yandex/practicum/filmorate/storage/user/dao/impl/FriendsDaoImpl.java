@@ -44,9 +44,7 @@ public class FriendsDaoImpl implements FriendsDao {
 
     @Override
     public List<User> getFriends(int userId) {
-        User foundUser = userStorage.getUserById(userId);
         String sqlQuery = "SELECT * FROM users WHERE user_id IN (SELECT friend_id FROM friendships WHERE user_id = ?)";
-        List<User> userFriends = jdbcTemplate.query(sqlQuery, userStorage::makeUser, userId);
-        return userFriends;
+        return jdbcTemplate.query(sqlQuery, userStorage::makeUser, userId);
     }
 }

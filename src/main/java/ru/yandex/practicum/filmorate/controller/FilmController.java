@@ -71,6 +71,7 @@ public class FilmController {
 
     @DeleteMapping("/{id}")
     public void deleteFilmById(@PathVariable int id) {
+        log.info("Получен DELETE запрос к эндпоинту /users/{}", id);
         filmService.deleteFilmById(id);
     }
 }
