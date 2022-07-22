@@ -92,9 +92,6 @@ public class DirectorDaoImpl implements DirectorDao {
     }
 
     private Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
-        Director director = new Director();
-        director.setId(rs.getInt("director_id"));
-        director.setName(rs.getString("director_name"));
-        return director;
+        return new Director(rs.getInt("director_id"), rs.getString("director_name"));
     }
 }
