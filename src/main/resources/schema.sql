@@ -43,3 +43,14 @@ CREATE TABLE IF NOT EXISTS FILMS_GENRES (
                                            GENRE_ID int REFERENCES GENRES(GENRE_ID) ON DELETE CASCADE,
                                            PRIMARY KEY (FILM_ID, GENRE_ID)
 );
+
+CREATE TABLE IF NOT EXISTS directors (
+                                      director_id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                                      director_name varchar CHECK director_name <> ' '
+);
+
+CREATE TABLE IF NOT EXISTS films_directors (
+                                            film_id INTEGER REFERENCES films(FILM_ID) ON DELETE CASCADE,
+                                            director_id INTEGER REFERENCES directors(director_id) ON DELETE CASCADE ,
+                                            PRIMARY KEY (film_id, director_id)
+);

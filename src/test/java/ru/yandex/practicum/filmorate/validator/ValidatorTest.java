@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,7 +28,8 @@ class ValidatorTest {
                 200,
                 Set.of(),
                 List.of(new Genre(1, "Комедия")),
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                new ArrayList<>());
         user = new User("Login", "Name", "Email@mail.ru", 1, LocalDate.now(), Set.of());
     }
 

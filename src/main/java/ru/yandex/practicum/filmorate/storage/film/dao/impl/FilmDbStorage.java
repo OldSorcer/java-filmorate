@@ -7,11 +7,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.dao.GenresDao;
-import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
-import ru.yandex.practicum.filmorate.storage.film.dao.MpaRateDao;
+import ru.yandex.practicum.filmorate.storage.film.dao.*;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.sql.Date;
@@ -28,13 +26,15 @@ public class FilmDbStorage implements FilmStorage {
     private final GenresDao genresDao;
     private final MpaRateDao mpaRateDao;
     private final LikesDao likesDao;
+    private final DirectorDao directorDao;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenresDao genresDao, MpaRateDao mpaRateDao, LikesDao likesDao) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenresDao genresDao, MpaRateDao mpaRateDao, LikesDao likesDao, DirectorDao directorDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.genresDao = genresDao;
         this.mpaRateDao = mpaRateDao;
         this.likesDao = likesDao;
+        this.directorDao = directorDao;
     }
 
     @Override
@@ -56,6 +56,9 @@ public class FilmDbStorage implements FilmStorage {
         film.setId(filmId);
         if (Objects.nonNull(film.getGenres())) {
             genresDao.addFilmGenres(film.getGenres(), filmId);
+        }
+        if (Objects.nonNull(film.getDirectors())) {
+            directorDao.addFilmDirectors(film.getDirectors(), filmId);
         }
         return film;
     }
@@ -79,7 +82,17 @@ public class FilmDbStorage implements FilmStorage {
             genresDao.removeGenres(film.getId());
             genresDao.addFilmGenres(film.getGenres(), film.getId());
         }
-        return getFilmById(film.getId());
+        if (film.getDirectors().isEmpty()) {
+            directorDao.deleteFilmDirectors(film.getId());
+        } else {
+            directorDao.deleteFilmDirectors(film.getId());
+            directorDao.addFilmDirectors(film.getDirectors(), film.getId());
+        }
+        Film updatedFilm = getFilmById(film.getId());
+        if (film.getDirectors().isEmpty()) {
+            updatedFilm.setDirectors(null);
+        }
+        return updatedFilm;
     }
 
     @Override
@@ -122,6 +135,24 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByDirectorId(int directorId, String sortedBy) {
+        Director director = directorDao.getById(directorId);
+        String sqlQuery = "SELECT f.film_id, film_name, description, release_date, duration, mpa_rate_id FROM films AS F " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "LEFT JOIN films_directors as fd ON f.film_id = fd.film_id " +
+                "WHERE fd.director_id = ? " +
+                "GROUP BY f.film_id ";
+        switch (sortedBy) {
+            case "year":
+                sqlQuery = sqlQuery +
+                        "ORDER BY release_date";
+                break;
+            case "likes":
+                sqlQuery = sqlQuery + "ORDER BY COUNT(fl.user_id) DESC";
+        }
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, directorId);
+    }
+
     public List<Film> getPopularFilmsNonYear(int count, int genreId) {
         String sqlQuery = "SELECT f.film_id, f.film_name, f.description, f.release_date, f.duration, f.mpa_rate_id " +
                 "FROM films AS f " +
@@ -156,6 +187,8 @@ public class FilmDbStorage implements FilmStorage {
         film.setGenres(genresDao.getByFilmId(film.getId()));
         film.setMpa(mpaRateDao.getById(rs.getInt("mpa_rate_id")));
         film.setLikes(Set.copyOf(likesDao.getLikes(film.getId())));
+        List<Director> directors = directorDao.getByFilmId(film.getId());
+        film.setDirectors(directors);
         return film;
     }
 }
