@@ -50,6 +50,10 @@ public class UserService {
     }
 
     public List<User> getFriendList(int userId) {
-        return friendsDao.getFriends(userId);
+        return friendsDao.getFriends(userStorage.getUserById(userId).getId());
+    }
+
+    public void deleteUserById(int id) {
+        userStorage.deleteUserById(id);
     }
 }

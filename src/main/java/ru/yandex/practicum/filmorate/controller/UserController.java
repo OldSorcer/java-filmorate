@@ -74,4 +74,10 @@ public class UserController {
         log.info("Получен GET запрос к эндпоинту /users/{}/friends/common/{}", id, otherId);
         return userService.getCommonFriendsId(id, otherId);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteUserById(@PathVariable int id) {
+        log.info("Получен DELETE запрос к эндпоинту /users/{}", id);
+        userService.deleteUserById(id);
+    }
 }
