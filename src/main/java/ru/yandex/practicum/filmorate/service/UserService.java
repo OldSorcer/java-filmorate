@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
@@ -51,5 +52,9 @@ public class UserService {
 
     public List<User> getFriendList(int userId) {
         return friendsDao.getFriends(userId);
+    }
+
+    public List<Feed> getFeedList(int id) {
+        return userStorage.getFeedList(id);
     }
 }
