@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
-import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,6 +24,7 @@ public class DirectorDaoImpl implements DirectorDao {
     public DirectorDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
     @Override
     public List<Director> getAll() {
         String sqlQuery = "SELECT * FROM directors";
@@ -47,7 +47,7 @@ public class DirectorDaoImpl implements DirectorDao {
         String sqlQuery = "INSERT INTO directors (director_name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[] {"director_id"});
+            PreparedStatement ps = connection.prepareStatement(sqlQuery, new String[]{"director_id"});
             ps.setString(1, director.getName());
             return ps;
         }, keyHolder);

@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.dao.GenresDao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GenreService {
@@ -22,5 +23,9 @@ public class GenreService {
 
     public Genre getById(int id) {
         return genresDao.getById(id);
+    }
+
+    public List<Genre> deleteDuplicates(List<Genre> genres) {
+        return genres.stream().distinct().collect(Collectors.toList());
     }
 }
