@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.dao.*;
-import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -39,7 +38,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film add(Film film) {
-        Validator.isValidFilm(film);
         String sqlQuery = "INSERT INTO films (film_name, description, release_date, duration, mpa_rate_id) " +
                 "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -76,23 +74,19 @@ public class FilmDbStorage implements FilmStorage {
                 "WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
                 film.getDuration(), film.getMpa().getId(), film.getId());
-        if (film.getGenres().isEmpty()) {
+        if (Objects.isNull(film.getGenres()) || film.getGenres().isEmpty()) {
             genresDao.removeGenres(film.getId());
         } else {
             genresDao.removeGenres(film.getId());
             genresDao.addFilmGenres(film.getGenres(), film.getId());
         }
-        if (film.getDirectors().isEmpty()) {
+        if (Objects.isNull(film.getDirectors()) || film.getDirectors().isEmpty()) {
             directorDao.deleteFilmDirectors(film.getId());
         } else {
             directorDao.deleteFilmDirectors(film.getId());
             directorDao.addFilmDirectors(film.getDirectors(), film.getId());
         }
-        Film updatedFilm = getFilmById(film.getId());
-        if (film.getDirectors().isEmpty()) {
-            updatedFilm.setDirectors(null);
-        }
-        return updatedFilm;
+        return film;
     }
 
     @Override
