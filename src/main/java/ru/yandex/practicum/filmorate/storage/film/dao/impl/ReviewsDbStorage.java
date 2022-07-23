@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewsDao;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,14 +46,14 @@ public class ReviewsDbStorage implements ReviewsDao {
                           "SET content = ?, ispositive = ? " +
                           "WHERE review_id = ?";
         jdbcTemplate.update(sqlQuery
-                , reviews.getContent()
-                , reviews.getIsPositive()
-                , reviews.getReviewId());
+                            , reviews.getContent()
+                            , reviews.getIsPositive()
+                            , reviews.getReviewId());
     }
 
     @Override
     public Reviews getReviewById(int id) {
-        String sqlQuery = " SELECT review_id, content, ispositive, user_id, film_id, useful " +
+        String sqlQuery = "SELECT review_id, content, ispositive, user_id, film_id, useful " +
                           "FROM reviews " +
                           "WHERE review_id = ?";
         List<Reviews> reviewsList = jdbcTemplate.query(sqlQuery, this::makeReview, id);
@@ -76,7 +75,6 @@ public class ReviewsDbStorage implements ReviewsDao {
                           "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, id, userId);
         addToRating(id);
-
     }
 
     @Override
@@ -121,7 +119,6 @@ public class ReviewsDbStorage implements ReviewsDao {
                           "ORDER BY useful DESC " +
                           "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::makeReview, filmId, count);
-
     }
 
     private void addToRating(int id) {
@@ -137,7 +134,7 @@ public class ReviewsDbStorage implements ReviewsDao {
     }
 
     private Reviews makeReview(ResultSet rs, int rowNum) throws SQLException {
-        return new Reviews(
+        return new Reviews (
                 rs.getInt("REVIEW_ID"),
                 rs.getString("CONTENT"),
                 rs.getBoolean("isPOSITIVE"),
