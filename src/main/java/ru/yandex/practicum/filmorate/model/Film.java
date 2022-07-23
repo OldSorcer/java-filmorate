@@ -23,7 +23,7 @@ public class Film implements Comparable<Film>{
     private Set<Integer> likes = new HashSet<>();
     private List<Genre> genres = new ArrayList<>();
     private MpaRating mpa;
-    private List<Director> directors = new ArrayList<>();
+    private List<Director> directors;
     @Override
     public int compareTo(Film o) {
         return o.getLikes().size() - this.getLikes().size();
