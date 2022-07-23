@@ -38,6 +38,7 @@ public class ReviewsController {
         log.info("Получен GET запрос к эндпоинту /reviews");
         return ResponseEntity.ok().body(reviewsService.getReviewsById(reviewId));
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Reviews> deleteReviews (@PathVariable int id) {
         log.info("Получен DELETE запрос к эндпоинту /reviews/{id}");
