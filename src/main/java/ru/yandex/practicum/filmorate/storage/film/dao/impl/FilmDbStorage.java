@@ -219,38 +219,38 @@ public class FilmDbStorage implements FilmStorage {
 
         String sqlQuery = "SELECT * FROM films WHERE FILM_ID IN (" +
 
-                //--ID неотлайканых фильмов"
+        //--ID неотлайканых фильмов"
 
-                "SELECT DISTINCT " +
-                "    rec.film_id " +
-                "FROM films_likes AS rec " +
-                "LEFT JOIN films_likes AS ul " +
-                "    ON ul.film_id = rec.film_id " +
-                "    AND ul.user_id = @ID " +
-                "WHERE ul.film_id IS NULL " +
-                "    AND rec.user_id IN( " +
+        "SELECT DISTINCT " +
+        "    rec.film_id " +
+        "FROM films_likes AS rec " +
+        "LEFT JOIN films_likes AS ul " +
+        "    ON ul.film_id = rec.film_id " +
+        "    AND ul.user_id = @ID " +
+        "WHERE ul.film_id IS NULL " +
+        "    AND rec.user_id IN( " +
 
-                //--id пользователей с максимальным количеством лайков
+        //--id пользователей с максимальным количеством лайков
 
-                "SELECT DISTINCT cl.USER_ID " +
-                "FROM films_likes AS cl " +
-                "INNER JOIN films_likes AS ul " +
-                "    ON (ul.film_id = cl.film_id " +
-                "    AND ul.user_id = @ID " +
-                "    AND cl.user_id <> @ID) " +
-                "GROUP BY cl.user_id " +
-                "HAVING COUNT(cl.film_id) IN " +
+        "SELECT DISTINCT cl.USER_ID " +
+        "FROM films_likes AS cl " +
+        "INNER JOIN films_likes AS ul " +
+        "    ON (ul.film_id = cl.film_id " +
+        "    AND ul.user_id = @ID " +
+        "    AND cl.user_id <> @ID) " +
+        "GROUP BY cl.user_id " +
+        "HAVING COUNT(cl.film_id) IN " +
 
-                //--Максимальное количество общих лайков
+        //--Максимальное количество общих лайков
 
-                "(SELECT MAX (max_likes) FROM " +
-                "   (SELECT COUNT(cl.film_id) AS max_likes " +
-                "    FROM films_likes AS cl " +
-                "    INNER JOIN films_likes AS ul " +
-                "        ON (ul.film_id = cl.film_id " +
-                "        AND ul.user_id = @ID " +
-                "        AND cl.user_id <> @ID) " +
-                "    GROUP BY cl.user_id))));";
+        "(SELECT MAX (max_likes) FROM " +
+        "   (SELECT COUNT(cl.film_id) AS max_likes " +
+        "    FROM films_likes AS cl " +
+        "    INNER JOIN films_likes AS ul " +
+        "        ON (ul.film_id = cl.film_id " +
+        "        AND ul.user_id = @ID " +
+        "        AND cl.user_id <> @ID) " +
+        "    GROUP BY cl.user_id))));";
 
         return sqlQuery.replaceAll("@ID",Integer.toString(userId));
     }
