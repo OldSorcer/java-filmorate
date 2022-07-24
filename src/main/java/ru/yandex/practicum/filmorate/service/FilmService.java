@@ -3,11 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,5 +71,38 @@ public class FilmService {
 
     public void deleteFilmById(int id) {
         filmStorage.deleteFilmById(id);
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userStorage.getUserById(userId).getId(),
+                userStorage.getUserById(friendId).getId());
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        String[] split = by.split(",");
+        List<Film> films = new ArrayList<>();
+        List<Film> filmsByDirectorsAndFilms = filmStorage.searchFilms("%" + query + "%");
+        if (split.length == 2) {
+            films.addAll(filmsByDirectorsAndFilms);
+        }
+        if (split.length == 1) {
+            for (Film film : filmsByDirectorsAndFilms) {
+                if (split[0].equals("title")) {
+                    if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                        films.add(film);
+                    }
+                }
+                if (split[0].equals("director")) {
+                    if (film.getDirectors().size() > 0) {
+                        for (Director director : film.getDirectors()) {
+                            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                                films.add(film);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return films;
     }
 }

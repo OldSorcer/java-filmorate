@@ -80,4 +80,16 @@ public class FilmController {
         log.info("Получен DELETE запрос к эндпоинту /users/{}", id);
         filmService.deleteFilmById(id);
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam int userId, @RequestParam int friendId) {
+        log.info("Получен GET запрос к эндпоинту /common");
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
+        log.info("Получен GET запрос к эндпоинту /search?query={}&by={}", query, by);
+        return filmService.searchFilms(query, by);
+    }
 }
