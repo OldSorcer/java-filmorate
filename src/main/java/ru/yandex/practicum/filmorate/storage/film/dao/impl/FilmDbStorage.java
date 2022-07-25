@@ -195,6 +195,17 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> searchFilms(String query) {
+        String sqlQuery = "SELECT f.* FROM films AS f " +
+                "LEFT JOIN films_likes AS fl ON f.film_id = fl.film_id " +
+                "WHERE LOWER(f.film_name) LIKE LOWER(?) " +
+                "OR f.film_id IN (SELECT film_id FROM films_directors WHERE director_id IN (SELECT director_id FROM directors WHERE LOWER(director_name) LIKE LOWER(?))) " +
+                "GROUP BY f.film_id " +
+                "ORDER BY COUNT(DISTINCT fl.user_id) DESC ";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, query, query);
+    }
+
+    @Override
     public List<Film> getRecommendedFilms(int userId) {
 
         return jdbcTemplate.query(recommendedFilmsQuery(userId), this::makeFilm);
