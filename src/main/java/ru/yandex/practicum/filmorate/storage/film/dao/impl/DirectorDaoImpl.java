@@ -58,7 +58,11 @@ public class DirectorDaoImpl implements DirectorDao {
     @Override
     public Director update(Director director) {
         String sqlQuery = "UPDATE directors SET director_name = ? WHERE director_id = ?";
-        jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
+        int result = jdbcTemplate.update(sqlQuery, director.getName(), director.getId());
+        if (result < 1) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
+                    String.format("Режиссер с ID %d не найден", director.getId()));
+        }
         return director;
     }
 

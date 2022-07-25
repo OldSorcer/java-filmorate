@@ -35,15 +35,14 @@ public class FilmService {
 
     public Film add(Film film) {
         Validator.isValidFilm(film);
-        if (Objects.nonNull(film.getGenres()) || !film.getGenres().isEmpty()) { // Если поле genres не null и не пустое
-            film.setGenres(genreService.deleteDuplicates(film.getGenres()));    // удаляем дубликаты жанров
+        if (Objects.nonNull(film.getGenres()) || !film.getGenres().isEmpty()) {
+            film.setGenres(genreService.deleteDuplicates(film.getGenres()));
         }
         return filmStorage.add(film);
     }
 
     public Film update(Film film) {
         Validator.isValidFilm(film);
-        Film foundedFilm = filmStorage.getFilmById(film.getId());
         if (Objects.nonNull(film.getGenres())) {
             film.setGenres(genreService.deleteDuplicates(film.getGenres()));
         }

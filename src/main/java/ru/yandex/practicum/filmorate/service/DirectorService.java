@@ -32,7 +32,6 @@ public class DirectorService {
 
     public Director update(Director director) {
         Validator.isValidDirector(director);
-        Director foundedDirector = directorDao.getById(director.getId());
         return directorDao.update(director);
     }
 

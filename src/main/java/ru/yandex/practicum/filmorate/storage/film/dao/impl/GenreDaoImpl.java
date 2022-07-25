@@ -43,7 +43,7 @@ public class GenreDaoImpl implements GenresDao {
 
     @Override
     public void addFilmGenres(List<Genre> genres, int filmId) {
-        String sqlQuery = "MERGE INTO films_genres (film_id, genre_id) VALUES (?, ?)";
+        String sqlQuery = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
         for (Genre genre : genres) {
             jdbcTemplate.update(sqlQuery, filmId, genre.getId());
         }

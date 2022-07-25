@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -72,8 +73,12 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "UPDATE films " +
                 "SET film_name = ?, description = ?, release_date = ?, duration = ?, mpa_rate_id = ? " +
                 "WHERE film_id = ?";
-        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
-                film.getDuration(), film.getMpa().getId(), film.getId());
+        int result = jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+                    film.getDuration(), film.getMpa().getId(), film.getId());
+        if (result < 1) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
+                    String.format("Фильм с ID %d не найден", film.getId()));
+        }
         if (Objects.isNull(film.getGenres()) || film.getGenres().isEmpty()) {
             genresDao.removeGenres(film.getId());
         } else {
