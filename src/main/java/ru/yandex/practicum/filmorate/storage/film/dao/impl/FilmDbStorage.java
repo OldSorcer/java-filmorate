@@ -204,6 +204,36 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::makeFilm, query, query);
     }
 
+    @Override
+    public List<Film> getRecommendedFilms(int id) {
+        String sqlQuery = "SELECT * FROM films WHERE FILM_ID IN (" +
+                "SELECT DISTINCT " +
+                "    rec.film_id " +
+                "FROM films_likes AS rec " +
+                "LEFT JOIN films_likes AS ul " +
+                "    ON ul.film_id = rec.film_id " +
+                "    AND ul.user_id = ? " +
+                "WHERE ul.film_id IS NULL " +
+                "    AND rec.user_id IN( " +
+                "SELECT DISTINCT cl.USER_ID " +
+                "FROM films_likes AS cl " +
+                "INNER JOIN films_likes AS ul " +
+                "    ON (ul.film_id = cl.film_id " +
+                "    AND ul.user_id = ? " +
+                "    AND cl.user_id <> ?) " +
+                "GROUP BY cl.user_id " +
+                "HAVING COUNT(cl.film_id) IN " +
+                "(SELECT MAX (max_likes) FROM " +
+                "   (SELECT COUNT(cl.film_id) AS max_likes " +
+                "    FROM films_likes AS cl " +
+                "    INNER JOIN films_likes AS ul " +
+                "        ON (ul.film_id = cl.film_id " +
+                "        AND ul.user_id = ? " +
+                "        AND cl.user_id <> ?) " +
+                "    GROUP BY cl.user_id))));";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, id, id, id, id, id);
+    }
+
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
         film.setName(rs.getString("film_name"));
