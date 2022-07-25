@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
-import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
