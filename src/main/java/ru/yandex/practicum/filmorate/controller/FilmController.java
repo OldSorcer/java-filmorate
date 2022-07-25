@@ -86,4 +86,10 @@ public class FilmController {
         log.info("Получен GET запрос к эндпоинту /common");
         return filmService.getCommonFilms(userId, friendId);
     }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam String query, @RequestParam String by) {
+        log.info("Получен GET запрос к эндпоинту /search?query={}&by={}", query, by);
+        return filmService.searchFilms(query, by);
+    }
 }
