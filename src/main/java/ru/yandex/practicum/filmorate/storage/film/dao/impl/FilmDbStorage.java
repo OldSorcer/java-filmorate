@@ -206,9 +206,33 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getRecommendedFilms(int userId) {
-
-        return jdbcTemplate.query(recommendedFilmsQuery(userId), this::makeFilm);
+    public List<Film> getRecommendedFilms(int id) {
+        String sqlQuery = "SELECT * FROM films WHERE FILM_ID IN (" +
+                "SELECT DISTINCT " +
+                "    rec.film_id " +
+                "FROM films_likes AS rec " +
+                "LEFT JOIN films_likes AS ul " +
+                "    ON ul.film_id = rec.film_id " +
+                "    AND ul.user_id = ? " +
+                "WHERE ul.film_id IS NULL " +
+                "    AND rec.user_id IN( " +
+                "SELECT DISTINCT cl.USER_ID " +
+                "FROM films_likes AS cl " +
+                "INNER JOIN films_likes AS ul " +
+                "    ON (ul.film_id = cl.film_id " +
+                "    AND ul.user_id = ? " +
+                "    AND cl.user_id <> ?) " +
+                "GROUP BY cl.user_id " +
+                "HAVING COUNT(cl.film_id) IN " +
+                "(SELECT MAX (max_likes) FROM " +
+                "   (SELECT COUNT(cl.film_id) AS max_likes " +
+                "    FROM films_likes AS cl " +
+                "    INNER JOIN films_likes AS ul " +
+                "        ON (ul.film_id = cl.film_id " +
+                "        AND ul.user_id = ? " +
+                "        AND cl.user_id <> ?) " +
+                "    GROUP BY cl.user_id))));";
+        return jdbcTemplate.query(sqlQuery, this::makeFilm, id, id, id, id, id);
     }
 
     private Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
@@ -224,45 +248,5 @@ public class FilmDbStorage implements FilmStorage {
         List<Director> directors = directorDao.getByFilmId(film.getId());
         film.setDirectors(directors);
         return film;
-    }
-
-    private String recommendedFilmsQuery(int userId){
-
-        String sqlQuery = "SELECT * FROM films WHERE FILM_ID IN (" +
-
-        //--ID неотлайканых фильмов"
-
-        "SELECT DISTINCT " +
-        "    rec.film_id " +
-        "FROM films_likes AS rec " +
-        "LEFT JOIN films_likes AS ul " +
-        "    ON ul.film_id = rec.film_id " +
-        "    AND ul.user_id = @ID " +
-        "WHERE ul.film_id IS NULL " +
-        "    AND rec.user_id IN( " +
-
-        //--id пользователей с максимальным количеством лайков
-
-        "SELECT DISTINCT cl.USER_ID " +
-        "FROM films_likes AS cl " +
-        "INNER JOIN films_likes AS ul " +
-        "    ON (ul.film_id = cl.film_id " +
-        "    AND ul.user_id = @ID " +
-        "    AND cl.user_id <> @ID) " +
-        "GROUP BY cl.user_id " +
-        "HAVING COUNT(cl.film_id) IN " +
-
-        //--Максимальное количество общих лайков
-
-        "(SELECT MAX (max_likes) FROM " +
-        "   (SELECT COUNT(cl.film_id) AS max_likes " +
-        "    FROM films_likes AS cl " +
-        "    INNER JOIN films_likes AS ul " +
-        "        ON (ul.film_id = cl.film_id " +
-        "        AND ul.user_id = @ID " +
-        "        AND cl.user_id <> @ID) " +
-        "    GROUP BY cl.user_id))));";
-
-        return sqlQuery.replaceAll("@ID",Integer.toString(userId));
     }
 }
