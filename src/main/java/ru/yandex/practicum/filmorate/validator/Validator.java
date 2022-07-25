@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -34,6 +35,13 @@ public class Validator {
                     "Имя режиссера не должно быть пустым");
         }
         return true;
+    }
+
+    public static boolean isValidReview(Reviews review) {
+        return isValidReviewContent(review.getContent()) &&
+                isValidIsPositive(review.getIsPositive()) &&
+                isValidUserId(review.getUserId()) &&
+                isValidFilmId(review.getFilmId());
     }
 
     private static boolean isValidFilmName(String name) {
@@ -94,6 +102,42 @@ public class Validator {
         if (date.isAfter(LocalDate.now())) {
             throw new ValidationException(HttpStatus.BAD_REQUEST,
                     "Дата рождения не должна быть позже " + LocalDate.now());
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean isValidReviewContent(String content) {
+        if (content.isEmpty()) {
+            throw new ValidationException(HttpStatus.BAD_REQUEST,
+                    "Отзыв не должен быть пустым.");
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean isValidIsPositive(Boolean isPositive) {
+        if (isPositive == null) {
+            throw new ValidationException(HttpStatus.BAD_REQUEST,
+                    "Тип отзыва не должен быть пустым.");
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean isValidUserId(int userId ) {
+        if (userId == 0) {
+            throw new ValidationException(HttpStatus.BAD_REQUEST,
+                    "ID пользователя не должно быть пустым.");
+        } else {
+            return true;
+        }
+    }
+
+    private static boolean isValidFilmId(int filmId ) {
+        if (filmId == 0) {
+            throw new ValidationException(HttpStatus.BAD_REQUEST,
+                    "ID фильма не должно быть пустым.");
         } else {
             return true;
         }
