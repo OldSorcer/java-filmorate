@@ -18,4 +18,5 @@ public interface FilmStorage {
     void deleteFilmById(int id);
     List<Film> getCommonFilms(int userId, int friendId);
     List<Film> searchFilms(String query);
+    List<Film> getRecommendedFilms(int userId);
 }
