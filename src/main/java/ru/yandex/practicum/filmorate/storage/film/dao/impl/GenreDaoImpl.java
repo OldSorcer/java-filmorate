@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.storage.film.dao.GenresDao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class GenreDaoImpl implements GenresDao {
@@ -44,8 +43,7 @@ public class GenreDaoImpl implements GenresDao {
 
     @Override
     public void addFilmGenres(List<Genre> genres, int filmId) {
-        String sqlQuery = "MERGE INTO films_genres (film_id, genre_id) VALUES (?, ?)";
-        List<Genre> uniqueGenre = genres.stream().distinct().collect(Collectors.toList());
+        String sqlQuery = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
         for (Genre genre : genres) {
             jdbcTemplate.update(sqlQuery, filmId, genre.getId());
         }

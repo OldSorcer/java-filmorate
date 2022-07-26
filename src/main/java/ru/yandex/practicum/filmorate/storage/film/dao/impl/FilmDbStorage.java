@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -10,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.dao.*;
-import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -39,7 +39,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film add(Film film) {
-        Validator.isValidFilm(film);
         String sqlQuery = "INSERT INTO films (film_name, description, release_date, duration, mpa_rate_id) " +
                 "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -74,25 +73,25 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "UPDATE films " +
                 "SET film_name = ?, description = ?, release_date = ?, duration = ?, mpa_rate_id = ? " +
                 "WHERE film_id = ?";
-        jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
-                film.getDuration(), film.getMpa().getId(), film.getId());
-        if (film.getGenres().isEmpty()) {
+        int result = jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), Date.valueOf(film.getReleaseDate()),
+                    film.getDuration(), film.getMpa().getId(), film.getId());
+        if (result < 1) {
+            throw new EntityNotFoundException(HttpStatus.NOT_FOUND,
+                    String.format("Фильм с ID %d не найден", film.getId()));
+        }
+        if (Objects.isNull(film.getGenres()) || film.getGenres().isEmpty()) {
             genresDao.removeGenres(film.getId());
         } else {
             genresDao.removeGenres(film.getId());
             genresDao.addFilmGenres(film.getGenres(), film.getId());
         }
-        if (film.getDirectors().isEmpty()) {
+        if (Objects.isNull(film.getDirectors()) || film.getDirectors().isEmpty()) {
             directorDao.deleteFilmDirectors(film.getId());
         } else {
             directorDao.deleteFilmDirectors(film.getId());
             directorDao.addFilmDirectors(film.getDirectors(), film.getId());
         }
-        Film updatedFilm = getFilmById(film.getId());
-        if (film.getDirectors().isEmpty()) {
-            updatedFilm.setDirectors(null);
-        }
-        return updatedFilm;
+        return film;
     }
 
     @Override
