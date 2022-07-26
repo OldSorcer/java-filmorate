@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
 
@@ -15,11 +16,13 @@ public class UserService {
 
     private final UserStorage userStorage;
     private final FriendsDao friendsDao;
+    private final FilmStorage filmStorage;
 
     @Autowired
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FriendsDao friendsDao) {
         this.userStorage = userStorage;
         this.friendsDao = friendsDao;
+        this.filmStorage = filmStorage;
     }
 
     public User add(User user) {
@@ -60,5 +63,9 @@ public class UserService {
 
     public List<Feed> getFeedList(int id) {
         return userStorage.getFeedList(id);
+    }
+
+    public List<Film> getRecommendedFilmsList(int id) {
+        return filmStorage.getRecommendedFilms(id);
     }
 }
