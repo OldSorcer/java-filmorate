@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.user.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.dao.impl.FeedDaoImpl;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
 
 import java.util.List;
@@ -17,11 +16,13 @@ import java.util.stream.Collectors;
 public class FriendsDaoImpl implements FriendsDao {
     private final JdbcTemplate jdbcTemplate;
     private final UserDbStorage userStorage;
+    private final FeedDaoImpl feedDaoImpl;
 
     @Autowired
-    public FriendsDaoImpl(JdbcTemplate jdbcTemplate, UserDbStorage userStorage) {
+    public FriendsDaoImpl(JdbcTemplate jdbcTemplate, UserDbStorage userStorage, FeedDaoImpl feedDaoImpl) {
         this.jdbcTemplate = jdbcTemplate;
         this.userStorage = userStorage;
+        this.feedDaoImpl = feedDaoImpl;
     }
 
     @Override
@@ -29,14 +30,14 @@ public class FriendsDaoImpl implements FriendsDao {
         User findUser = userStorage.getUserById(targetUserId);
         String sqlQuery = "INSERT INTO friendships (user_id, friend_id, is_confirmed) VALUES (?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, targetUserId, false);
-        userStorage.addFeedList(userId, targetUserId, EventType.FRIEND, Operation.ADD);
+        feedDaoImpl.addFeedList(userId, targetUserId, EventType.FRIEND, Operation.ADD);
     }
 
     @Override
     public void deleteFriend(int userId, int targetUserId) {
         String sqlQuery = "DELETE FROM friendships WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sqlQuery, userId, targetUserId);
-        userStorage.addFeedList(userId, targetUserId, EventType.FRIEND, Operation.REMOVE);
+        feedDaoImpl.addFeedList(userId, targetUserId, EventType.FRIEND, Operation.REMOVE);
     }
 
     @Override

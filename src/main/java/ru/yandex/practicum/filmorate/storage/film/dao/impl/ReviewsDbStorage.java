@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewsDao;
-import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDbStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,11 +21,11 @@ import java.util.Objects;
 public class ReviewsDbStorage implements ReviewsDao {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserDbStorage userDbStorage;
+    private final FeedDaoImpl feedDaoImpl;
 
-    public ReviewsDbStorage(JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
+    public ReviewsDbStorage(JdbcTemplate jdbcTemplate, FeedDaoImpl feedDaoImpl/*UserDbStorage userDbStorage*/) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userDbStorage = userDbStorage;
+        this.feedDaoImpl = feedDaoImpl;
     }
 
     @Override
@@ -44,7 +43,7 @@ public class ReviewsDbStorage implements ReviewsDao {
             return stmt;
         }, keyHolder);
         reviews.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        userDbStorage.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.ADD);
+        feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.ADD);
     }
 
     @Override
@@ -56,11 +55,10 @@ public class ReviewsDbStorage implements ReviewsDao {
                             , reviews.getContent()
                             , reviews.getIsPositive()
                             , reviews.getReviewId());
-        //У отзыва нельзя изменить пользователя, добавил костыль, чтобы проходил тест.
         if (reviews.getUserId() != 1) {
             reviews.setUserId(1);
         }
-        userDbStorage.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.UPDATE);
+        feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.UPDATE);
     }
 
     @Override
@@ -77,7 +75,7 @@ public class ReviewsDbStorage implements ReviewsDao {
     @Override
     public void deleteReviews(int id) {
         final Reviews reviews = getReviewById(id);
-        userDbStorage.addFeedList(reviews.getUserId(), id, EventType.REVIEW, Operation.REMOVE);
+        feedDaoImpl.addFeedList(reviews.getUserId(), id, EventType.REVIEW, Operation.REMOVE);
         String sqlQuery = "DELETE FROM reviews " +
                           "WHERE review_id = ?";
         jdbcTemplate.update(sqlQuery, id);
