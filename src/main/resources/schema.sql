@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS USERS (
-                                     USER_ID INTEGER PRIMARY KEY AUTO_INCREMENT ON DELETE CASCADE,
+                                     USER_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
                                      LOGIN VARCHAR UNIQUE NOT NULL,
                                      USER_NAME VARCHAR UNIQUE NOT NULL,
                                      EMAIL VARCHAR NOT NULL,
@@ -84,10 +84,10 @@ CREATE TABLE IF NOT EXISTS feed
     entity_id      INTEGER,
     operation_name CHARACTER VARYING(10),
     event_type     CHARACTER VARYING(10),
-    user_id        INTEGER NOT NULL ON DELETE CASCADE,
+    user_id        INTEGER NOT NULL,
     timestamp      LONG,
     CONSTRAINT feed_users_user_id_fk
-        FOREIGN KEY (user_id) REFERENCES users
+        FOREIGN KEY (user_id) REFERENCES users ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS feed_event_id_uindex
