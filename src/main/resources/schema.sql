@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS feed
     entity_id      INTEGER,
     operation_name CHARACTER VARYING(10),
     event_type     CHARACTER VARYING(10),
-    user_id        INTEGER NOT NULL,
+    user_id        INTEGER NOT NULL ON DELETE CASCADE,
     timestamp      LONG,
     CONSTRAINT feed_users_user_id_fk
         FOREIGN KEY (user_id) REFERENCES users
