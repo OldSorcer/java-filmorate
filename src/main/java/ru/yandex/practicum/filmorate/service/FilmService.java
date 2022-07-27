@@ -3,12 +3,16 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
+import ru.yandex.practicum.filmorate.validator.Validator;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FilmService {
@@ -16,21 +20,32 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final LikesDao likesDao;
+    private final GenreService genreService;
 
     @Autowired
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
-                       LikesDao likesDao) {
+                       LikesDao likesDao,
+                       GenreService genreService) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.likesDao = likesDao;
+        this.genreService = genreService;
     }
 
     public Film add(Film film) {
+        Validator.isValidFilm(film);
+        if (Objects.nonNull(film.getGenres()) || !film.getGenres().isEmpty()) {
+            film.setGenres(genreService.deleteDuplicates(film.getGenres()));
+        }
         return filmStorage.add(film);
     }
 
     public Film update(Film film) {
+        Validator.isValidFilm(film);
+        if (Objects.nonNull(film.getGenres())) {
+            film.setGenres(genreService.deleteDuplicates(film.getGenres()));
+        }
         return filmStorage.update(film);
     }
 
@@ -65,5 +80,42 @@ public class FilmService {
 
     public List<Film> getFilmsByDirectorId(int directorId, String sortedBy) {
         return filmStorage.getFilmsByDirectorId(directorId, sortedBy);
+    }
+
+    public void deleteFilmById(int id) {
+        filmStorage.deleteFilmById(id);
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userStorage.getUserById(userId).getId(),
+                userStorage.getUserById(friendId).getId());
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        String[] split = by.split(",");
+        List<Film> films = new ArrayList<>();
+        List<Film> filmsByDirectorsAndFilms = filmStorage.searchFilms("%" + query + "%");
+        if (split.length == 2) {
+            films.addAll(filmsByDirectorsAndFilms);
+        }
+        if (split.length == 1) {
+            for (Film film : filmsByDirectorsAndFilms) {
+                if (split[0].equals("title")) {
+                    if (film.getName().toLowerCase().contains(query.toLowerCase())) {
+                        films.add(film);
+                    }
+                }
+                if (split[0].equals("director")) {
+                    if (film.getDirectors().size() > 0) {
+                        for (Director director : film.getDirectors()) {
+                            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                                films.add(film);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return films;
     }
 }

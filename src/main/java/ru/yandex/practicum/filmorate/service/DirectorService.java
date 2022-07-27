@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.dao.DirectorDao;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
@@ -32,7 +31,6 @@ public class DirectorService {
 
     public Director update(Director director) {
         Validator.isValidDirector(director);
-        Director foundedDirector = directorDao.getById(director.getId());
         return directorDao.update(director);
     }
 

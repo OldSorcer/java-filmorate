@@ -15,4 +15,8 @@ public interface FilmStorage {
     List<Film> getPopularFilmsNonGenresYear(int count);
     List<Film> getPopularFilmsNonYear(int count, int genreId);
     List<Film> getPopularFilmsNonGenre(int count, int year);
+    void deleteFilmById(int id);
+    List<Film> getCommonFilms(int userId, int friendId);
+    List<Film> searchFilms(String query);
+    List<Film> getRecommendedFilms(int userId);
 }
