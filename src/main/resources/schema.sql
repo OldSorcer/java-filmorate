@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS USERS (
-                                     USER_ID INTEGER PRIMARY KEY AUTO_INCREMENT,
+                                     USER_ID INTEGER PRIMARY KEY AUTO_INCREMENT ON DELETE CASCADE,
                                      LOGIN VARCHAR UNIQUE NOT NULL,
                                      USER_NAME VARCHAR UNIQUE NOT NULL,
                                      EMAIL VARCHAR NOT NULL,
