@@ -77,3 +77,25 @@ CREATE TABLE IF NOT EXISTS films_directors (
                                             director_id INTEGER REFERENCES directors(director_id) ON DELETE CASCADE ,
                                             PRIMARY KEY (film_id, director_id)
 );
+
+CREATE TABLE IF NOT EXISTS feed
+(
+    event_id       INTEGER auto_increment,
+    entity_id      INTEGER,
+    operation_name CHARACTER VARYING(10),
+    event_type     CHARACTER VARYING(10),
+    user_id        INTEGER NOT NULL,
+    timestamp      LONG,
+    CONSTRAINT feed_users_user_id_fk
+        FOREIGN KEY (user_id) REFERENCES users
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS feed_event_id_uindex
+    ON feed (event_id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS feed_timestamp_uindex
+    on feed (TIMESTAMP);
+
+ALTER TABLE feed
+    ADD CONSTRAINT IF NOT EXISTS feed_pk
+        PRIMARY KEY (event_id);

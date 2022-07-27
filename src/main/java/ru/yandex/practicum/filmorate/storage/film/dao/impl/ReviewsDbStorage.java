@@ -6,8 +6,11 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Reviews;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewsDao;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,9 +21,11 @@ import java.util.Objects;
 public class ReviewsDbStorage implements ReviewsDao {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FeedDaoImpl feedDaoImpl;
 
-    public ReviewsDbStorage(JdbcTemplate jdbcTemplate) {
+    public ReviewsDbStorage(JdbcTemplate jdbcTemplate, FeedDaoImpl feedDaoImpl/*UserDbStorage userDbStorage*/) {
         this.jdbcTemplate = jdbcTemplate;
+        this.feedDaoImpl = feedDaoImpl;
     }
 
     @Override
@@ -38,6 +43,7 @@ public class ReviewsDbStorage implements ReviewsDao {
             return stmt;
         }, keyHolder);
         reviews.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.ADD);
     }
 
     @Override
@@ -45,10 +51,20 @@ public class ReviewsDbStorage implements ReviewsDao {
         String sqlQuery = "UPDATE reviews " +
                           "SET content = ?, ispositive = ? " +
                           "WHERE review_id = ?";
+        final int updateReviewId = reviews.getReviewId();
+        final Reviews currentReview = getReviewById(updateReviewId);
+        final int currentUserId = currentReview.getUserId();
+        final int currentFilmId = currentReview.getFilmId();
+
+        if (currentUserId != reviews.getUserId() || currentFilmId != reviews.getFilmId()) {
+            reviews.setUserId(currentUserId);
+            reviews.setFilmId(currentFilmId);
+        }
         jdbcTemplate.update(sqlQuery
-                            , reviews.getContent()
-                            , reviews.getIsPositive()
-                            , reviews.getReviewId());
+                , reviews.getContent()
+                , reviews.getIsPositive()
+                , reviews.getReviewId());
+        feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.UPDATE);
     }
 
     @Override
@@ -64,6 +80,8 @@ public class ReviewsDbStorage implements ReviewsDao {
 
     @Override
     public void deleteReviews(int id) {
+        final Reviews reviews = getReviewById(id);
+        feedDaoImpl.addFeedList(reviews.getUserId(), id, EventType.REVIEW, Operation.REMOVE);
         String sqlQuery = "DELETE FROM reviews " +
                           "WHERE review_id = ?";
         jdbcTemplate.update(sqlQuery, id);
