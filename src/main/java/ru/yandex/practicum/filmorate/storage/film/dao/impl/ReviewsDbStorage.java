@@ -51,13 +51,19 @@ public class ReviewsDbStorage implements ReviewsDao {
         String sqlQuery = "UPDATE reviews " +
                           "SET content = ?, ispositive = ? " +
                           "WHERE review_id = ?";
-        jdbcTemplate.update(sqlQuery
-                            , reviews.getContent()
-                            , reviews.getIsPositive()
-                            , reviews.getReviewId());
-        if (reviews.getUserId() != 1) {
-            reviews.setUserId(1);
+        final int updateReviewId = reviews.getReviewId();
+        final Reviews currentReview = getReviewById(updateReviewId);
+        final int currentUserId = currentReview.getUserId();
+        final int currentFilmId = currentReview.getFilmId();
+
+        if (currentUserId != reviews.getUserId() || currentFilmId != reviews.getFilmId()) {
+            reviews.setUserId(currentUserId);
+            reviews.setFilmId(currentFilmId);
         }
+        jdbcTemplate.update(sqlQuery
+                , reviews.getContent()
+                , reviews.getIsPositive()
+                , reviews.getReviewId());
         feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.UPDATE);
     }
 
