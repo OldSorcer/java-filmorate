@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.validator.Validator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -93,29 +94,30 @@ public class FilmService {
 
     public List<Film> searchFilms(String query, String by) {
         String[] split = by.split(",");
-        List<Film> films = new ArrayList<>();
+        List<Film> films;
         List<Film> filmsByDirectorsAndFilms = filmDao.searchFilms("%" + query + "%");
         if (split.length == 2) {
-            films.addAll(filmsByDirectorsAndFilms);
+            films = new ArrayList<>(filmsByDirectorsAndFilms);
+            return films;
         }
-        if (split.length == 1) {
-            for (Film film : filmsByDirectorsAndFilms) {
-                if (split[0].equals("title")) {
-                    if (film.getName().toLowerCase().contains(query.toLowerCase())) {
-                        films.add(film);
-                    }
-                }
-                if (split[0].equals("director")) {
-                    if (film.getDirectors().size() > 0) {
-                        for (Director director : film.getDirectors()) {
-                            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
-                                films.add(film);
-                            }
-                        }
-                    }
-                }
-            }
+        if ("title".equals(split[0])) {
+            films = filmsByDirectorsAndFilms.stream()
+                    .filter(film -> film.getName().toLowerCase().contains(query.toLowerCase()))
+                    .collect(Collectors.toList());
+        } else {
+            films = filmsByDirectorsAndFilms.stream()
+                    .filter(film -> isDirectorFind(film, query))
+                    .collect(Collectors.toList());
         }
         return films;
+    }
+
+    private boolean isDirectorFind(Film film, String query) {
+        for (Director director : film.getDirectors()) {
+            if (director.getName().toLowerCase().contains(query.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
