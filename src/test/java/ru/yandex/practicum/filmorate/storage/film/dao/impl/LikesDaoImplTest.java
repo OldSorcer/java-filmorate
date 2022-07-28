@@ -10,9 +10,10 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDaoImpl;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -23,8 +24,8 @@ import java.util.Set;
 
 class LikesDaoImplTest {
     private final LikesDaoImpl likesDao;
-    private final UserDbStorage userDbStorage;
-    private final FilmDbStorage filmDbStorage;
+    private final UserDaoImpl userDaoImpl;
+    private final FilmDaoImpl filmDbStorage;
     private final User userOne = new User("LoginOne",
             "NameOne",
             "Email1@mail.ru",
@@ -38,12 +39,13 @@ class LikesDaoImplTest {
             200,
             Set.of(),
             List.of(new Genre(1, "Комедия")),
-            new MpaRating(1, "G"));
+            new MpaRating(1, "G"),
+            new ArrayList<>());
 
 
     @Test
     public void addAndGetLike() {
-        userDbStorage.add(userOne);
+        userDaoImpl.add(userOne);
         filmDbStorage.add(film);
         likesDao.addLike(1, 1);
         Assertions.assertEquals(List.of(1), likesDao.getLikes(1));
@@ -51,7 +53,7 @@ class LikesDaoImplTest {
 
     @Test
     public void deleteLike() {
-        userDbStorage.add(userOne);
+        userDaoImpl.add(userOne);
         filmDbStorage.add(film);
         likesDao.addLike(1, 1);
         likesDao.deleteLike(1, 1);

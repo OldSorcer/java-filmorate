@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,74 +28,64 @@ class ValidatorTest {
                 200,
                 Set.of(),
                 List.of(new Genre(1, "Комедия")),
-                new MpaRating(1, "G"));
+                new MpaRating(1, "G"),
+                new ArrayList<>());
         user = new User("Login", "Name", "Email@mail.ru", 1, LocalDate.now(), Set.of());
     }
 
     @Test
     void shouldThrowValidationExceptionIfFilmNameIsEmpty() {
         film.setName("");
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidFilm(film));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateFilm(film));
     }
 
     @Test
     void shouldThrowValidationExceptionIfFilmDescriptionLengthIs234() {
         film.setDescription(film.getDescription() + film.getDescription() + film.getDescription());
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidFilm(film));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateFilm(film));
     }
 
     @Test
     void shouldThrowValidationExceptionIfFilmReleaseDateIf27December1895() {
         film.setReleaseDate(LocalDate.of(1895, 12, 26));
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidFilm(film));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateFilm(film));
     }
 
     @Test
     void shouldReturnValidationExceptionIfFilmDurationIsBelow0() {
         film.setDuration(-1);
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidFilm(film));
-    }
-
-    @Test
-    void shouldReturnTrueIfFilmIsValid() {
-        Assertions.assertTrue(Validator.isValidFilm(film));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateFilm(film));
     }
 
     @Test
     void shouldThrowValidationExceptionIfEmailIsEmpty() {
         user.setEmail("");
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidUser(user));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateUser(user));
     }
 
     @Test
     void shouldThrowValidationExceptionIfEmailIncorrect() {
         user.setEmail("Emailmail.ru");
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidUser(user));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateUser(user));
     }
 
     @Test
     void shouldThrowValidationExceptionIfLoginIsEmpty() {
         user.setLogin("");
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidUser(user));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateUser(user));
     }
 
     @Test
     void shouldThrowValidationExceptionIfLoginContainsSpace() {
         user.setLogin("Login login");
-        Assertions.assertThrows(ValidationException.class, () -> Validator.isValidUser(user));
+        Assertions.assertThrows(ValidationException.class, () -> Validator.validateUser(user));
     }
 
     @Test
     void shouldSetLoginIfNameIsEmpty() {
         String expectedName = "Login";
-
         user.setName("");
-        Validator.isValidUser(user);
+        Validator.validateUser(user);
         Assertions.assertEquals(expectedName, user.getName());
-    }
-
-    @Test
-    void souldReturnTrueIfUserIsValid() {
-        Assertions.assertTrue(Validator.isValidUser(user));
     }
 }

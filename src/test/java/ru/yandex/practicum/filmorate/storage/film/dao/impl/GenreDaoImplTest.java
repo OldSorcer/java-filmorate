@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ import java.util.Set;
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:scriptTest.sql")
 class GenreDaoImplTest {
     private final GenreDaoImpl genreDao;
-    private final FilmDbStorage filmDbStorage;
+    private final FilmDaoImpl filmDbStorage;
     private final Film film = new Film("Film name",
             "Description",
             1,
@@ -28,7 +29,8 @@ class GenreDaoImplTest {
             200,
             Set.of(),
             List.of(new Genre(1, "Комедия")),
-            new MpaRating(1, "G"));
+            new MpaRating(1, "G"),
+            new ArrayList<>());
 
     @Test
     public void addFilmGenres() {
