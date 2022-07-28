@@ -30,12 +30,12 @@ public class DirectorService {
     }
 
     public Director update(Director director) {
-        Validator.isValidDirector(director);
+        Validator.validateDirector(director);
         return directorDao.update(director);
     }
 
     public Director add(Director director) {
-        Validator.isValidDirector(director);
+        Validator.validateDirector(director);
         return directorDao.add(director);
     }
 }

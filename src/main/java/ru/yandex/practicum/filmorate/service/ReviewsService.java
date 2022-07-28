@@ -24,7 +24,7 @@ public class ReviewsService {
     }
 
     public Reviews addReviews(Reviews reviews) {
-        Validator.isValidReview(reviews);
+        Validator.validateReview(reviews);
         userService.getUserById(reviews.getUserId());
         filmService.getFilmById(reviews.getFilmId());
         reviewsDao.addReviews(reviews);

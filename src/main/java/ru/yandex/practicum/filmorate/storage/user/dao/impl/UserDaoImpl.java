@@ -7,7 +7,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.UserDao;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.sql.Date;
@@ -17,16 +17,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-public class UserDbStorage implements UserStorage {
+public class UserDaoImpl implements UserDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public User add(User user) {
-        Validator.isValidUser(user);
+        Validator.validateUser(user);
         String sqlQuery = "INSERT INTO USERS (login, user_name, email, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
