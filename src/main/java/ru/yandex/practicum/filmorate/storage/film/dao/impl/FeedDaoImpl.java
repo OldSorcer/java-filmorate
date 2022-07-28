@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class FeedDaoImpl implements FeedDao {
@@ -46,13 +47,12 @@ public class FeedDaoImpl implements FeedDao {
             ps.setLong(5, timestamp.getTime());
             return ps;
         }, keyHolder);
-        feed.setEventId(keyHolder.getKey().intValue());
+        feed.setEventId(Objects.requireNonNull(keyHolder.getKey()).intValue());
     }
 
     public List<Feed> getFeedList(int id) {
         String sqlQuery = "SELECT * FROM feed WHERE user_id = ?";
-        List<Feed> feedList = jdbcTemplate.query(sqlQuery, this::makeFeed, id);
-        return feedList;
+        return jdbcTemplate.query(sqlQuery, this::makeFeed, id);
     }
 
     public Feed makeFeed(ResultSet resultSet, int rowNum) throws SQLException {
