@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,7 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Component
-public class FilmDbStorage implements FilmStorage {
+public class FilmDaoImpl implements FilmDao {
     private final JdbcTemplate jdbcTemplate;
     private final GenresDao genresDao;
     private final MpaRateDao mpaRateDao;
@@ -29,7 +28,7 @@ public class FilmDbStorage implements FilmStorage {
     private final DirectorDao directorDao;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenresDao genresDao, MpaRateDao mpaRateDao, LikesDao likesDao, DirectorDao directorDao) {
+    public FilmDaoImpl(JdbcTemplate jdbcTemplate, GenresDao genresDao, MpaRateDao mpaRateDao, LikesDao likesDao, DirectorDao directorDao) {
         this.jdbcTemplate = jdbcTemplate;
         this.genresDao = genresDao;
         this.mpaRateDao = mpaRateDao;

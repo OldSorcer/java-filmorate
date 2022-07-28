@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.FilmDao;
 import ru.yandex.practicum.filmorate.storage.film.dao.LikesDao;
-import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.UserDao;
 import ru.yandex.practicum.filmorate.validator.Validator;
 
 import java.util.ArrayList;
@@ -17,18 +17,18 @@ import java.util.Objects;
 @Service
 public class FilmService {
 
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final FilmDao filmDao;
+    private final UserDao userDao;
     private final LikesDao likesDao;
     private final GenreService genreService;
 
     @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                       @Qualifier("userDbStorage") UserStorage userStorage,
+    public FilmService(@Qualifier("filmDaoImpl") FilmDao filmDao,
+                       @Qualifier("userDaoImpl") UserDao userDao,
                        LikesDao likesDao,
                        GenreService genreService) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
+        this.filmDao = filmDao;
+        this.userDao = userDao;
         this.likesDao = likesDao;
         this.genreService = genreService;
     }
@@ -38,7 +38,7 @@ public class FilmService {
         if (Objects.nonNull(film.getGenres()) || !film.getGenres().isEmpty()) {
             film.setGenres(genreService.deleteDuplicates(film.getGenres()));
         }
-        return filmStorage.add(film);
+        return filmDao.add(film);
     }
 
     public Film update(Film film) {
@@ -46,7 +46,7 @@ public class FilmService {
         if (Objects.nonNull(film.getGenres())) {
             film.setGenres(genreService.deleteDuplicates(film.getGenres()));
         }
-        return filmStorage.update(film);
+        return filmDao.update(film);
     }
 
     public void setLike(int userId, int filmId) {
@@ -59,42 +59,42 @@ public class FilmService {
 
     public List<Film> getPopularFilms(int count, int genreId, int year) {
         if ((year == 0) && (genreId == 0)) {
-            return filmStorage.getPopularFilmsNonGenresYear(count);
+            return filmDao.getPopularFilmsNonGenresYear(count);
         }
         if (year == 0) {
-            return filmStorage.getPopularFilmsNonYear(count, genreId);
+            return filmDao.getPopularFilmsNonYear(count, genreId);
         }
         if (genreId == 0) {
-            return filmStorage.getPopularFilmsNonGenre(count, year);
+            return filmDao.getPopularFilmsNonGenre(count, year);
         }
-        return filmStorage.getPopularFilms(count, genreId, year);
+        return filmDao.getPopularFilms(count, genreId, year);
     }
 
     public Film getFilmById(int id) {
-        return filmStorage.getFilmById(id);
+        return filmDao.getFilmById(id);
     }
 
     public List<Film> getAll() {
-        return filmStorage.getAll();
+        return filmDao.getAll();
     }
 
     public List<Film> getFilmsByDirectorId(int directorId, String sortedBy) {
-        return filmStorage.getFilmsByDirectorId(directorId, sortedBy);
+        return filmDao.getFilmsByDirectorId(directorId, sortedBy);
     }
 
     public void deleteFilmById(int id) {
-        filmStorage.deleteFilmById(id);
+        filmDao.deleteFilmById(id);
     }
 
     public List<Film> getCommonFilms(int userId, int friendId) {
-        return filmStorage.getCommonFilms(userStorage.getUserById(userId).getId(),
-                userStorage.getUserById(friendId).getId());
+        return filmDao.getCommonFilms(userDao.getUserById(userId).getId(),
+                userDao.getUserById(friendId).getId());
     }
 
     public List<Film> searchFilms(String query, String by) {
         String[] split = by.split(",");
         List<Film> films = new ArrayList<>();
-        List<Film> filmsByDirectorsAndFilms = filmStorage.searchFilms("%" + query + "%");
+        List<Film> filmsByDirectorsAndFilms = filmDao.searchFilms("%" + query + "%");
         if (split.length == 2) {
             films.addAll(filmsByDirectorsAndFilms);
         }

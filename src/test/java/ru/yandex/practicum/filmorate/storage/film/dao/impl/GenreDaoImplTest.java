@@ -21,7 +21,7 @@ import java.util.Set;
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:scriptTest.sql")
 class GenreDaoImplTest {
     private final GenreDaoImpl genreDao;
-    private final FilmDbStorage filmDbStorage;
+    private final FilmDaoImpl filmDbStorage;
     private final Film film = new Film("Film name",
             "Description",
             1,
