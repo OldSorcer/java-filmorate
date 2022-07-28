@@ -4,40 +4,40 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.dao.FilmDao;
 import ru.yandex.practicum.filmorate.storage.user.dao.FriendsDao;
-import ru.yandex.practicum.filmorate.storage.user.dao.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.UserDao;
 
 import java.util.List;
 
 @Service
 public class UserService {
 
-    private final UserStorage userStorage;
+    private final UserDao userDao;
     private final FriendsDao friendsDao;
-    private final FilmStorage filmStorage;
+    private final FilmDao filmDao;
 
     @Autowired
-    public UserService(UserStorage userStorage, FriendsDao friendsDao, FilmStorage filmStorage) {
-        this.userStorage = userStorage;
+    public UserService(UserDao userDao, FriendsDao friendsDao, FilmDao filmDao) {
+        this.userDao = userDao;
         this.friendsDao = friendsDao;
-        this.filmStorage = filmStorage;
+        this.filmDao = filmDao;
     }
 
     public User add(User user) {
-        return userStorage.add(user);
+        return userDao.add(user);
     }
 
     public User update(User user) {
-        return userStorage.update(user);
+        return userDao.update(user);
     }
 
     public List<User> getAll() {
-        return userStorage.getAll();
+        return userDao.getAll();
     }
 
     public User getUserById(int id) {
-        return userStorage.getUserById(id);
+        return userDao.getUserById(id);
     }
 
     public void addFriend(int userId, int targetUserId) {
@@ -53,14 +53,14 @@ public class UserService {
     }
 
     public List<User> getFriendList(int userId) {
-        return friendsDao.getFriends(userStorage.getUserById(userId).getId());
+        return friendsDao.getFriends(userDao.getUserById(userId).getId());
     }
 
     public void deleteUserById(int id) {
-        userStorage.deleteUserById(id);
+        userDao.deleteUserById(id);
     }
 
     public List<Film> getRecommendedFilmsList(int id) {
-        return filmStorage.getRecommendedFilms(id);
+        return filmDao.getRecommendedFilms(id);
     }
 }

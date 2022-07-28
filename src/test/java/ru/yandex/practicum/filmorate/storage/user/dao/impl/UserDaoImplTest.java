@@ -16,8 +16,8 @@ import java.util.Set;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:scriptTest.sql")
-class UserDbStorageTest {
-    private final UserDbStorage userDbStorage;
+class UserDaoImplTest {
+    private final UserDaoImpl userDaoImpl;
     private final User userOne = new User("LoginOne",
             "NameOne",
             "Email1@mail.ru",
@@ -27,34 +27,34 @@ class UserDbStorageTest {
 
     @Test
     public void addUser() {
-        userDbStorage.add(userOne);
-        Assertions.assertEquals(userOne, userDbStorage.getUserById(1));
+        userDaoImpl.add(userOne);
+        Assertions.assertEquals(userOne, userDaoImpl.getUserById(1));
     }
 
     @Test
     public void getUserById1() {
-        userDbStorage.add(userOne);
-        Assertions.assertEquals(userOne, userDbStorage.getUserById(1));
+        userDaoImpl.add(userOne);
+        Assertions.assertEquals(userOne, userDaoImpl.getUserById(1));
     }
 
     @Test
     public void getAllUsers() {
-        userDbStorage.add(userOne);
-        Assertions.assertEquals(List.of(userOne), userDbStorage.getAll());
+        userDaoImpl.add(userOne);
+        Assertions.assertEquals(List.of(userOne), userDaoImpl.getAll());
     }
 
     @Test
     public void updateUser() {
-        userDbStorage.add(userOne);
+        userDaoImpl.add(userOne);
         userOne.setName("New name");
-        userDbStorage.update(userOne);
-        Assertions.assertEquals(userOne, userDbStorage.getUserById(1));
+        userDaoImpl.update(userOne);
+        Assertions.assertEquals(userOne, userDaoImpl.getUserById(1));
     }
 
     @Test
     public void deleteUser() {
-        userDbStorage.add(userOne);
-        userDbStorage.delete(userOne);
-        Assertions.assertTrue(userDbStorage.getAll().isEmpty());
+        userDaoImpl.add(userOne);
+        userDaoImpl.delete(userOne);
+        Assertions.assertTrue(userDaoImpl.getAll().isEmpty());
     }
 }

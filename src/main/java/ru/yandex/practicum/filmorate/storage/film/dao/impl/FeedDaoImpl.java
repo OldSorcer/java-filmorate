@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.dao.FeedDao;
-import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.dao.impl.UserDaoImpl;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,16 +22,16 @@ import java.util.List;
 @Component
 public class FeedDaoImpl implements FeedDao {
     private final JdbcTemplate jdbcTemplate;
-    private final UserDbStorage userDbStorage;
+    private final UserDaoImpl userDaoImpl;
 
     @Autowired
-    public FeedDaoImpl(JdbcTemplate jdbcTemplate, UserDbStorage userDbStorage) {
+    public FeedDaoImpl(JdbcTemplate jdbcTemplate, UserDaoImpl userDaoImpl) {
         this.jdbcTemplate = jdbcTemplate;
-        this.userDbStorage = userDbStorage;
+        this.userDaoImpl = userDaoImpl;
     }
 
     public void addFeedList(int userId, int entityId, EventType type, Operation operation) {
-        final User user = userDbStorage.getUserById(userId);
+        final User user = userDaoImpl.getUserById(userId);
         String sqlQuery = "INSERT INTO feed (entity_id, operation_name, event_type, user_id, timestamp)" +
                 "VALUES (?, ?, ?, ?, ?) ";
         Feed feed = new Feed();

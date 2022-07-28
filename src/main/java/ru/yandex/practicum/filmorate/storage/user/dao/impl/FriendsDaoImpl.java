@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 @Component
 public class FriendsDaoImpl implements FriendsDao {
     private final JdbcTemplate jdbcTemplate;
-    private final UserDbStorage userStorage;
+    private final UserDaoImpl userStorage;
     private final FeedDaoImpl feedDaoImpl;
 
     @Autowired
-    public FriendsDaoImpl(JdbcTemplate jdbcTemplate, UserDbStorage userStorage, FeedDaoImpl feedDaoImpl) {
+    public FriendsDaoImpl(JdbcTemplate jdbcTemplate, UserDaoImpl userStorage, FeedDaoImpl feedDaoImpl) {
         this.jdbcTemplate = jdbcTemplate;
         this.userStorage = userStorage;
         this.feedDaoImpl = feedDaoImpl;
