@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,7 +12,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Film implements Comparable<Film>{
+public class Film implements Comparable<Film> {
     private String name;
     private String description;
     private int id;
@@ -24,6 +22,7 @@ public class Film implements Comparable<Film>{
     private List<Genre> genres = new ArrayList<>();
     private MpaRating mpa;
     private List<Director> directors;
+
     @Override
     public int compareTo(Film o) {
         return o.getLikes().size() - this.getLikes().size();
