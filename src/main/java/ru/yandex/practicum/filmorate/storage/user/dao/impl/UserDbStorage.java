@@ -26,7 +26,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User add(User user) {
-        Validator.isValidUser(user);
+        Validator.validateUser(user);
         String sqlQuery = "INSERT INTO USERS (login, user_name, email, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
