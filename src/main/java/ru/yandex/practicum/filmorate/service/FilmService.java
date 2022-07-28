@@ -58,14 +58,14 @@ public class FilmService {
         likesDao.deleteLike(userId, filmId);
     }
 
-    public List<Film> getPopularFilms(int count, int genreId, int year) {
-        if ((year == 0) && (genreId == 0)) {
+    public List<Film> getPopularFilms(Integer count, Integer genreId, Integer year) {
+        if (Objects.isNull(year) && Objects.isNull(genreId)) {
             return filmDao.getPopularFilmsNonGenresYear(count);
         }
-        if (year == 0) {
+        if (Objects.isNull(year)) {
             return filmDao.getPopularFilmsNonYear(count, genreId);
         }
-        if (genreId == 0) {
+        if (Objects.isNull(genreId)) {
             return filmDao.getPopularFilmsNonGenre(count, year);
         }
         return filmDao.getPopularFilms(count, genreId, year);
