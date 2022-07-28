@@ -37,9 +37,6 @@ public class MpaRateDaoImpl implements MpaRateDao {
     }
 
     private MpaRating makeMpaRating(ResultSet rs, int rowNum) throws SQLException {
-        MpaRating mpaRating = new MpaRating();
-        mpaRating.setId(rs.getInt("mpa_rate_id"));
-        mpaRating.setName(rs.getString("mpa_rate_name"));
-        return mpaRating;
+        return new MpaRating(rs.getInt("mpa_rate_id"), rs.getString("mpa_rate_name"));
     }
 }

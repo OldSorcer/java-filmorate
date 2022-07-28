@@ -27,7 +27,7 @@ public class FriendsDaoImpl implements FriendsDao {
 
     @Override
     public void addFriend(int userId, int targetUserId) {
-        User findUser = userStorage.getUserById(targetUserId);
+        userStorage.getUserById(targetUserId);
         String sqlQuery = "INSERT INTO friendships (user_id, friend_id, is_confirmed) VALUES (?, ?, ?)";
         jdbcTemplate.update(sqlQuery, userId, targetUserId, false);
         feedDaoImpl.addFeedList(userId, targetUserId, EventType.FRIEND, Operation.ADD);
@@ -42,9 +42,7 @@ public class FriendsDaoImpl implements FriendsDao {
 
     @Override
     public List<User> getCommonFriends(int userId, int targetUserId) {
-        List<User> userFriends = getFriends(userId);
-        List<User> targetUserFriends = getFriends(targetUserId);
-        return userFriends.stream().filter(targetUserFriends::contains).collect(Collectors.toList());
+        return getFriends(userId).stream().filter(getFriends(targetUserId)::contains).collect(Collectors.toList());
     }
 
     @Override
