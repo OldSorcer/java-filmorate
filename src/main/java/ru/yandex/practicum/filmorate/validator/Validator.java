@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -36,7 +36,7 @@ public class Validator {
         }
     }
 
-    public static void validateReview(Reviews review) {
+    public static void validateReview(Review review) {
         validateReviewContent(review.getContent());
         validateIsPositive(review.getIsPositive());
         validateUserId(review.getUserId());
