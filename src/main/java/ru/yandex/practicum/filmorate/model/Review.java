@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Reviews {
+public class Review {
 
     private int reviewId;
     private String content;
