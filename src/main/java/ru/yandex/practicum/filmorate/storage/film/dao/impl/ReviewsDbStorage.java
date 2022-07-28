@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.EntityNotFoundException;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
-import ru.yandex.practicum.filmorate.model.Reviews;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.dao.ReviewsDao;
 
 import java.sql.PreparedStatement;
@@ -29,59 +29,63 @@ public class ReviewsDbStorage implements ReviewsDao {
     }
 
     @Override
-    public void addReviews(Reviews reviews) {
+    public void addReview(Review review) {
         String sqlQuery = "INSERT INTO reviews (content, ispositive, user_id, film_id, useful) " +
                           "VALUES (?,?,?,?,?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"REVIEW_ID"});
-            stmt.setString(1, reviews.getContent());
-            stmt.setBoolean(2, reviews.getIsPositive());
-            stmt.setInt(3, reviews.getUserId());
-            stmt.setInt(4, reviews.getFilmId());
-            stmt.setDouble(5, reviews.getUseful());
+            setStatement(review, stmt);
             return stmt;
         }, keyHolder);
-        reviews.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.ADD);
+        review.setReviewId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        feedDaoImpl.addFeedList(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.ADD);
+    }
+
+    private void setStatement(Review review, PreparedStatement stmt) throws SQLException {
+        stmt.setString(1, review.getContent());
+        stmt.setBoolean(2, review.getIsPositive());
+        stmt.setInt(3, review.getUserId());
+        stmt.setInt(4, review.getFilmId());
+        stmt.setDouble(5, review.getUseful());
     }
 
     @Override
-    public void updateReviews(Reviews reviews) {
+    public void updateReview(Review review) {
         String sqlQuery = "UPDATE reviews " +
                           "SET content = ?, ispositive = ? " +
                           "WHERE review_id = ?";
-        final int updateReviewId = reviews.getReviewId();
-        final Reviews currentReview = getReviewById(updateReviewId);
+        final int updateReviewId = review.getReviewId();
+        final Review currentReview = getReviewById(updateReviewId);
         final int currentUserId = currentReview.getUserId();
         final int currentFilmId = currentReview.getFilmId();
 
-        if (currentUserId != reviews.getUserId() || currentFilmId != reviews.getFilmId()) {
-            reviews.setUserId(currentUserId);
-            reviews.setFilmId(currentFilmId);
+        if (currentUserId != review.getUserId() || currentFilmId != review.getFilmId()) {
+            review.setUserId(currentUserId);
+            review.setFilmId(currentFilmId);
         }
         jdbcTemplate.update(sqlQuery
-                , reviews.getContent()
-                , reviews.getIsPositive()
-                , reviews.getReviewId());
-        feedDaoImpl.addFeedList(reviews.getUserId(), reviews.getReviewId(), EventType.REVIEW, Operation.UPDATE);
+                , review.getContent()
+                , review.getIsPositive()
+                , review.getReviewId());
+        feedDaoImpl.addFeedList(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.UPDATE);
     }
 
     @Override
-    public Reviews getReviewById(int id) {
+    public Review getReviewById(int id) {
         String sqlQuery = "SELECT review_id, content, ispositive, user_id, film_id, useful " +
                           "FROM reviews " +
                           "WHERE review_id = ?";
-        List<Reviews> reviewsList = jdbcTemplate.query(sqlQuery, this::makeReview, id);
-        return reviewsList.stream().findFirst().orElseThrow(() ->
+        List<Review> reviewList = jdbcTemplate.query(sqlQuery, this::makeReview, id);
+        return reviewList.stream().findFirst().orElseThrow(() ->
                 new EntityNotFoundException(HttpStatus.NOT_FOUND,
                         String.format("Отзыв с ID %d не найден", id)));
     }
 
     @Override
-    public void deleteReviews(int id) {
-        final Reviews reviews = getReviewById(id);
-        feedDaoImpl.addFeedList(reviews.getUserId(), id, EventType.REVIEW, Operation.REMOVE);
+    public void deleteReview(int id) {
+        final Review review = getReviewById(id);
+        feedDaoImpl.addFeedList(review.getUserId(), id, EventType.REVIEW, Operation.REMOVE);
         String sqlQuery = "DELETE FROM reviews " +
                           "WHERE review_id = ?";
         jdbcTemplate.update(sqlQuery, id);
@@ -120,7 +124,7 @@ public class ReviewsDbStorage implements ReviewsDao {
     }
 
     @Override
-    public List<Reviews> getAllReviews() {
+    public List<Review> getAllReviews() {
         String sqlQuery = "SELECT * " +
                           "FROM reviews " +
                           "GROUP BY review_id " +
@@ -129,7 +133,7 @@ public class ReviewsDbStorage implements ReviewsDao {
     }
 
     @Override
-    public List<Reviews> getReviewsByFilmId(int filmId, int count) {
+    public List<Review> getReviewsByFilmId(int filmId, int count) {
         String sqlQuery = "SELECT * " +
                           "FROM reviews " +
                           "WHERE film_id = ? " +
@@ -151,8 +155,8 @@ public class ReviewsDbStorage implements ReviewsDao {
         jdbcTemplate.update(sqlQuery, id);
     }
 
-    private Reviews makeReview(ResultSet rs, int rowNum) throws SQLException {
-        return new Reviews (
+    private Review makeReview(ResultSet rs, int rowNum) throws SQLException {
+        return new Review(
                 rs.getInt("REVIEW_ID"),
                 rs.getString("CONTENT"),
                 rs.getBoolean("isPOSITIVE"),
