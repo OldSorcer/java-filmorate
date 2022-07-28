@@ -40,7 +40,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Review> deleteReviews (@PathVariable int id) {
+    public ResponseEntity<Review> deleteReview(@PathVariable int id) {
         log.info("Получен DELETE запрос к эндпоинту /reviews/{id}");
         reviewsService.deleteReview(id);
         return ResponseEntity.ok().build();
