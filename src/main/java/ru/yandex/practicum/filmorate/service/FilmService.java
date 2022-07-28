@@ -34,7 +34,7 @@ public class FilmService {
     }
 
     public Film add(Film film) {
-        Validator.isValidFilm(film);
+        Validator.validateFilm(film);
         if (Objects.nonNull(film.getGenres()) || !film.getGenres().isEmpty()) {
             film.setGenres(genreService.deleteDuplicates(film.getGenres()));
         }
@@ -42,7 +42,7 @@ public class FilmService {
     }
 
     public Film update(Film film) {
-        Validator.isValidFilm(film);
+        Validator.validateFilm(film);
         if (Objects.nonNull(film.getGenres())) {
             film.setGenres(genreService.deleteDuplicates(film.getGenres()));
         }
