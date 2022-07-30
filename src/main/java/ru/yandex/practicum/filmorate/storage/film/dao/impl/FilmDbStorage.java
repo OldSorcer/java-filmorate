@@ -207,31 +207,35 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getRecommendedFilms(int id) {
-        String sqlQuery = "SELECT * FROM films WHERE FILM_ID IN (" +
-                "SELECT DISTINCT " +
+        String sqlQuery = "SELECT * FROM " +
+                "films AS f " +
+                "INNER JOIN " +
+                "(SELECT DISTINCT " +
                 "    rec.film_id " +
                 "FROM films_likes AS rec " +
                 "LEFT JOIN films_likes AS ul " +
-                "    ON ul.film_id = rec.film_id " +
-                "    AND ul.user_id = ? " +
-                "WHERE ul.film_id IS NULL " +
-                "    AND rec.user_id IN( " +
-                "SELECT DISTINCT cl.USER_ID " +
+                "ON ul.film_id = rec.film_id " +
+                "AND ul.user_id = ? " +
+                "INNER JOIN (SELECT DISTINCT cl.USER_ID as id " +
                 "FROM films_likes AS cl " +
                 "INNER JOIN films_likes AS ul " +
-                "    ON (ul.film_id = cl.film_id " +
-                "    AND ul.user_id = ? " +
-                "    AND cl.user_id <> ?) " +
+                "        ON (ul.film_id = cl.film_id " +
+                "            AND ul.user_id = ? " +
+                "            AND cl.user_id <> ?) " +
                 "GROUP BY cl.user_id " +
                 "HAVING COUNT(cl.film_id) IN " +
-                "(SELECT MAX (max_likes) FROM " +
-                "   (SELECT COUNT(cl.film_id) AS max_likes " +
-                "    FROM films_likes AS cl " +
-                "    INNER JOIN films_likes AS ul " +
-                "        ON (ul.film_id = cl.film_id " +
-                "        AND ul.user_id = ? " +
-                "        AND cl.user_id <> ?) " +
-                "    GROUP BY cl.user_id))));";
+                "(SELECT MAX(max_likes) " +
+                "FROM (SELECT COUNT(cl.film_id) AS max_likes " +
+                "FROM films_likes AS cl " +
+                "INNER JOIN films_likes AS ul " +
+                "    ON (ul.film_id = cl.film_id AND " +
+                "        ul.user_id = ? AND " +
+                "        cl.user_id <> ?) " +
+                "GROUP BY cl.user_id))) AS maxLikesId " +
+                "    ON rec.USER_ID = maxLikesId.id " +
+                "WHERE ul.USER_ID IS NULL) AS filmID " +
+                "ON f.FILM_ID = filmID.FILM_ID;";
+
         return jdbcTemplate.query(sqlQuery, this::makeFilm, id, id, id, id, id);
     }
 
